@@ -1,0 +1,8 @@
+project_id = "tesi"
+project_number = "611091564191"
+region = "europe-west1"
+zone = "europe-west1-b"
+composer_image_version = "composer-2.1.14-airflow-2.5.1"
+sa_namespace= "sa-namespace"
+podoperator_sa = "podoperator-sa"
+environment = "dev"
