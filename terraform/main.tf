@@ -60,10 +60,10 @@ module "dbt_sa" {
 
 resource "google_compute_network" "vpc_network" {
   project = var.project_id
-  name = "uk-gap-ml-${var.environment}-vpc"
+  name = "etl-tesi-${var.environment}-vpc"
   auto_create_subnetworks = false
   routing_mode = "GLOBAL"
-  
+
 }
 
 resource "google_compute_subnetwork" "composersub" {
@@ -129,9 +129,9 @@ module "datavm" {
 
 
 
-resource "google_composer_environment" "uk-gap-ml-composer" {
+resource "google_composer_environment" "etl-tesi-composer" {
   provider =  google-beta
-  name    = "uk-gap-ml-composer"
+  name    = "etl-tesi-composer"
   region  = var.region
   project = var.project_id
   config {
@@ -139,25 +139,24 @@ resource "google_composer_environment" "uk-gap-ml-composer" {
       image_version  = var.composer_image_version
       env_variables = {
         AIRFLOW_VAR_BIGQUERY_LOCATION = var.region
-        AIRFLOW_VAR_SOURCE_DATA_PROJECT = var.dbt_source_data_project
        }
     }
 
     workloads_config {
       scheduler {
-        cpu        = 2
-        memory_gb  = 2
-        storage_gb = 2
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
         count      = 1
       }
       web_server {
-        cpu        = 2
-        memory_gb  = 2
+        cpu        = 0.5
+        memory_gb  = 1.875
         storage_gb = 1
       }
       worker {
-        cpu = 3
-        memory_gb  = 4
+        cpu = 0.5
+        memory_gb  = 1.875
         storage_gb = 1
         min_count  = 1
         max_count  = 3
@@ -165,32 +164,15 @@ resource "google_composer_environment" "uk-gap-ml-composer" {
 
 
     }
-    environment_size = "ENVIRONMENT_SIZE_MEDIUM"
+    environment_size = "ENVIRONMENT_SIZE_SMALL"
 
     node_config {
 
       network         = google_compute_network.vpc_network.self_link
       subnetwork      = google_compute_subnetwork.composersub.self_link
       service_account = module.composer_sa.email
-
-          ip_allocation_policy {
-                cluster_secondary_range_name = google_compute_subnetwork.composersub.secondary_ip_range[0].range_name
-                services_secondary_range_name =  google_compute_subnetwork.composersub.secondary_ip_range[1].range_name
-                 }
+      
     }
-
-
-
-    # private_environment_config {
-    #   enable_private_endpoint = true
-    # }
-
-    # master_authorized_networks_config {
-    #   enabled = true
-    #   cidr_blocks {
-    #     cidr_block = module.uk-gap-ml-${var.environment}-vpc.subnet_ips["${var.region}/vmsubnet"]
-    #   }
-    # }
   }
 }
 
@@ -199,19 +181,7 @@ resource "google_composer_environment" "uk-gap-ml-composer" {
 module "import_bucket" {
   source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/gcs"
   project_id = var.project_id
-  name       = "uk-gap-ml-${var.environment}-data-ingest"
-  versioning = true
-  location = "europe-west1"
-  storage_class = "REGIONAL"
-  uniform_bucket_level_access = false
-}
-
-
-
-module "dbt_docs_bucket" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/gcs"
-  project_id = var.project_id
-  name       = "uk-gap-ml-${var.environment}-dbt-docs"
+  name       = "etl-tesi-${var.environment}-data-ingest"
   versioning = true
   location = "europe-west1"
   storage_class = "REGIONAL"
@@ -222,382 +192,382 @@ module "dbt_docs_bucket" {
 
 ### BigQuery Datasets and tables with schema
 
-module "bigquery-dataset_gap_dataset_raw" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/bigquery-dataset"
-  project_id = var.project_id
-  id         = "gap_dataset_raw"
-  location = var.region
-  iam = {
-    "roles/bigquery.dataEditor" = ["serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"] # Make pubsub default service account write to bigquery for the subscription
-    "roles/bigquery.admin" = [ module.dbt_sa.iam_email ] # Mak
-  }
+# module "bigquery-dataset_gap_dataset_raw" {
+#   source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/bigquery-dataset"
+#   project_id = var.project_id
+#   id         = "gap_dataset_raw"
+#   location = var.region
+#   iam = {
+#     "roles/bigquery.dataEditor" = ["serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"] # Make pubsub default service account write to bigquery for the subscription
+#     "roles/bigquery.admin" = [ module.dbt_sa.iam_email ] # Mak
+#   }
 
-  tables = {
-    IT_LAST_PUBLISH_TIME = {
-      friendly_name = "Last published time"
-      labels = {}
-      options = null
-      partitioning = null
-      schema = local.last_publish_time_schema
-      deletion_protection = false
-    }
-    UK_LAST_PUBLISH_TIME = {
-      friendly_name = "Last published time"
-      labels = {}
-      options = null
-      partitioning = null
-      schema = local.last_publish_time_schema
-      deletion_protection = false
-    }
+#   tables = {
+#     IT_LAST_PUBLISH_TIME = {
+#       friendly_name = "Last published time"
+#       labels = {}
+#       options = null
+#       partitioning = null
+#       schema = local.last_publish_time_schema
+#       deletion_protection = false
+#     }
+#     UK_LAST_PUBLISH_TIME = {
+#       friendly_name = "Last published time"
+#       labels = {}
+#       options = null
+#       partitioning = null
+#       schema = local.last_publish_time_schema
+#       deletion_protection = false
+#     }
 
-    DE_LAST_PUBLISH_TIME = {
-      friendly_name = "Last published time"
-      labels = {}
-      options = null
-      partitioning = null
-      schema = local.last_publish_time_schema
-      deletion_protection = false
-    }
+#     DE_LAST_PUBLISH_TIME = {
+#       friendly_name = "Last published time"
+#       labels = {}
+#       options = null
+#       partitioning = null
+#       schema = local.last_publish_time_schema
+#       deletion_protection = false
+#     }
 
-    IT-DCM-STREAM_LINEAR = {
-      friendly_name = "Streaming start IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     IT-DCM-STREAM_LINEAR = {
+#       friendly_name = "Streaming start IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    IT-DCM-STREAM_STOP = {
-      friendly_name = "Streaming stop IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    IT-DCM-STREAM_VOD = {
-      friendly_name = "Streaming vod IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    IT-DCM-HEARTBEAT = {
-      friendly_name = "Heartbeat info IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     IT-DCM-STREAM_STOP = {
+#       friendly_name = "Streaming stop IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     IT-DCM-STREAM_VOD = {
+#       friendly_name = "Streaming vod IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     IT-DCM-HEARTBEAT = {
+#       friendly_name = "Heartbeat info IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    IT-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
-      friendly_name = "Account updated info IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    IT-IMS-PROFILE_CREATED = {
-      friendly_name = "profile created IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    IT-IMS-PROFILE_MODIFIED = {
-      friendly_name = "Profile modified IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    IT-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
-      friendly_name = "payment info IT"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     IT-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
+#       friendly_name = "Account updated info IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     IT-IMS-PROFILE_CREATED = {
+#       friendly_name = "profile created IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     IT-IMS-PROFILE_MODIFIED = {
+#       friendly_name = "Profile modified IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     IT-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
+#       friendly_name = "payment info IT"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-    IT-LOGINS = {
-      friendly_name = "login info"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     IT-LOGINS = {
+#       friendly_name = "login info"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-    # UK
-    UK-DCM-STREAM_LINEAR = {
-      friendly_name = "Streaming start UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     # UK
+#     UK-DCM-STREAM_LINEAR = {
+#       friendly_name = "Streaming start UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    UK-DCM-STREAM_STOP = {
-      friendly_name = "Streaming stop UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    UK-DCM-STREAM_VOD = {
-      friendly_name = "Streaming vod UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    UK-DCM-HEARTBEAT = {
-      friendly_name = "Heartbeat info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     UK-DCM-STREAM_STOP = {
+#       friendly_name = "Streaming stop UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     UK-DCM-STREAM_VOD = {
+#       friendly_name = "Streaming vod UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     UK-DCM-HEARTBEAT = {
+#       friendly_name = "Heartbeat info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    UK-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
-      friendly_name = "Account updated info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    UK-IMS-PROFILE_CREATED = {
-      friendly_name = "profile created UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    UK-IMS-PROFILE_MODIFIED = {
-      friendly_name = "Profile modified UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    UK-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
-      friendly_name = "payment info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     UK-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
+#       friendly_name = "Account updated info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     UK-IMS-PROFILE_CREATED = {
+#       friendly_name = "profile created UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     UK-IMS-PROFILE_MODIFIED = {
+#       friendly_name = "Profile modified UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     UK-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
+#       friendly_name = "payment info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-    UK-LOGINS = {
-      friendly_name = "login info"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     UK-LOGINS = {
+#       friendly_name = "login info"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-    # DE
-    DE-DCM-STREAM_LINEAR = {
-      friendly_name = "Streaming start UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     # DE
+#     DE-DCM-STREAM_LINEAR = {
+#       friendly_name = "Streaming start UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    DE-DCM-STREAM_STOP = {
-      friendly_name = "Streaming stop UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    DE-DCM-STREAM_VOD = {
-      friendly_name = "Streaming vod UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
-    DE-DCM-HEARTBEAT = {
-      friendly_name = "Heartbeat info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false
-    }
+#     DE-DCM-STREAM_STOP = {
+#       friendly_name = "Streaming stop UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     DE-DCM-STREAM_VOD = {
+#       friendly_name = "Streaming vod UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
+#     DE-DCM-HEARTBEAT = {
+#       friendly_name = "Heartbeat info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false
+#     }
 
-    DE-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
-      friendly_name = "Account updated info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    DE-IMS-PROFILE_CREATED = {
-      friendly_name = "profile created UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    DE-IMS-PROFILE_MODIFIED = {
-      friendly_name = "Profile modified UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
-    DE-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
-      friendly_name = "payment info UK"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }      
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     DE-ACCOUNT_MANAGER-ACCOUNT_UPDATED = {
+#       friendly_name = "Account updated info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     DE-IMS-PROFILE_CREATED = {
+#       friendly_name = "profile created UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     DE-IMS-PROFILE_MODIFIED = {
+#       friendly_name = "Profile modified UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
+#     DE-PAYMENTS_MANAGER-STORE_PAYMENT_ACCOUNTS = {
+#       friendly_name = "payment info UK"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }      
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-    DE-LOGINS = {
-      friendly_name = "login info"
-      labels = {}
-      options = null
-      partitioning = {
-        field = "publish_time"
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }  
-      schema = local.pubschema
-      deletion_protection = false    
-    }
+#     DE-LOGINS = {
+#       friendly_name = "login info"
+#       labels = {}
+#       options = null
+#       partitioning = {
+#         field = "publish_time"
+#         range = null # use start/end/interval for range
+#         time  = { type = "DAY", expiration_ms = null }
+#       }  
+#       schema = local.pubschema
+#       deletion_protection = false    
+#     }
 
-  }
-}
+#   }
+# }
 
 

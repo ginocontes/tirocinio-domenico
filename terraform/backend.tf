@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "tesielt-terraform"
+    bucket = "tesietldomenico-terraform"
     prefix = "dev/state"
   }
 }

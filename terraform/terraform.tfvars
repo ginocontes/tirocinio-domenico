@@ -1,5 +1,5 @@
-project_id = "tesi"
-project_number = "611091564191"
+project_id = "etl-tesi-domenico"
+project_number = "412154446110"
 region = "europe-west1"
 zone = "europe-west1-b"
 composer_image_version = "composer-2.1.14-airflow-2.5.1"
