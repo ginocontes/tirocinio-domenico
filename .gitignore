@@ -3,3 +3,4 @@
 /terraform/.terraform/
 .DS_Store
 creds.txt
+__pycache__/
