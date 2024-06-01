@@ -1,7 +1,6 @@
 import datetime
 
 from airflow import models
-from airflow.providers.google.cloud.operators import dataproc
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import (
     GCSToBigQueryOperator,

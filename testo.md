@@ -21,13 +21,12 @@ Per ovvi motivi di diritti di proprietà intellettuale mostrerò una procedura s
 ## Terraform
 
 
-
 ## Airflow
 
 
 ## Composer
 
 
-
 # Conclusioni
+
 

@@ -43,19 +43,19 @@ resource "google_service_account_iam_member" "service_agent_extensions" {
 
 
 ## This is the service account that will be used by kubernetes pod operator to run the dbt jobs
-module "dbt_sa" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/iam-service-account"
-  project_id = var.project_id
-  name       = "dbt-sa"
-  iam_project_roles = {
-    (var.project_id) = [
-      "roles/editor"
-    ]
-  }
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = [ "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"]
-  }
-}
+# module "dbt_sa" {
+#   source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/iam-service-account"
+#   project_id = var.project_id
+#   name       = "dbt-sa"
+#   iam_project_roles = {
+#     (var.project_id) = [
+#       "roles/editor"
+#     ]
+#   }
+#   iam = {
+#     "roles/iam.serviceAccountTokenCreator" = [ "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"]
+#   }
+# }
 
 
 resource "google_compute_network" "vpc_network" {
@@ -111,70 +111,70 @@ module "default_firewall" {
 }
 
 
-module "datavm" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/compute-vm"
-  project_id = var.project_id
-  zone       = var.zone
-  name       = "datavm"
-  network_interfaces = [{
-    network    = google_compute_network.vpc_network.self_link
-    subnetwork = google_compute_subnetwork.vmsubnet.self_link
-  }]
-  service_account_create = false
-  service_account_scopes = ["cloud-platform"]
-  tags = [ "ssh" ]
-}
+# module "datavm" {
+#   source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/compute-vm"
+#   project_id = var.project_id
+#   zone       = var.zone
+#   name       = "datavm"
+#   network_interfaces = [{
+#     network    = google_compute_network.vpc_network.self_link
+#     subnetwork = google_compute_subnetwork.vmsubnet.self_link
+#   }]
+#   service_account_create = false
+#   service_account_scopes = ["cloud-platform"]
+#   tags = [ "ssh" ]
+# }
 
 
 
 
 
-resource "google_composer_environment" "etl-tesi-composer" {
-  provider =  google-beta
-  name    = "etl-tesi-composer"
-  region  = var.region
-  project = var.project_id
-  config {
-    software_config {
-      image_version  = var.composer_image_version
-      env_variables = {
-        AIRFLOW_VAR_BIGQUERY_LOCATION = var.region
-       }
-    }
+# resource "google_composer_environment" "etl-tesi-composer" {
+#   provider =  google-beta
+#   name    = "etl-tesi-composer"
+#   region  = var.region
+#   project = var.project_id
+#   config {
+#     software_config {
+#       image_version  = var.composer_image_version
+#       env_variables = {
+#         AIRFLOW_VAR_BIGQUERY_LOCATION = var.region
+#        }
+#     }
 
-    workloads_config {
-      scheduler {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        count      = 1
-      }
-      web_server {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-      }
-      worker {
-        cpu = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        min_count  = 1
-        max_count  = 3
-      }
+#     workloads_config {
+#       scheduler {
+#         cpu        = 0.5
+#         memory_gb  = 1.875
+#         storage_gb = 1
+#         count      = 1
+#       }
+#       web_server {
+#         cpu        = 0.5
+#         memory_gb  = 1.875
+#         storage_gb = 1
+#       }
+#       worker {
+#         cpu = 0.5
+#         memory_gb  = 1.875
+#         storage_gb = 1
+#         min_count  = 1
+#         max_count  = 3
+#       }
 
 
-    }
-    environment_size = "ENVIRONMENT_SIZE_SMALL"
+#     }
+#     environment_size = "ENVIRONMENT_SIZE_SMALL"
 
-    node_config {
+#     node_config {
 
-      network         = google_compute_network.vpc_network.self_link
-      subnetwork      = google_compute_subnetwork.composersub.self_link
-      service_account = module.composer_sa.email
-      
-    }
-  }
-}
+#       network         = google_compute_network.vpc_network.self_link
+#       subnetwork      = google_compute_subnetwork.composersub.self_link
+#       service_account = module.composer_sa.email
+
+#     }
+#   }
+# }
 
 
 
