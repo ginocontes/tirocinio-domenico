@@ -12,7 +12,6 @@ JourneyID as CAMPAIGN_CD,
 JourneyName as CAMPAIGN_DESC,
 JourneyName as CAMPAIGN_NM,
 VersionID as CAMPAIGN_SK
- 
 FROM ETL20A.Journey j1
 where  (j1.JourneyStatus='Running' or j1.JourneyStatus='Finishing' or j1.JourneyStatus='Stopped' or j1.JourneyStatus='Paused')
 and not exists (select 1 from ETL20A.CI_CAMPAIGN_RETROFIT_FULL j2

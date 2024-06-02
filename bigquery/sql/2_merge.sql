@@ -2,7 +2,7 @@ CREATE OR REPLACE PROCEDURE `ETL20A.DataMerge_proc`(from_date STRING, to_date ST
 OPTIONS(strict_mode=false)
 BEGIN
 MERGE `ETL20A.Bounce_all_part` a
-USING `ETL20A.Bounce_temp_part` t
+USING `ETL20A.Bounce_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.jobid  = a.jobid
@@ -13,7 +13,7 @@ WHEN MATCHED THEN DELETE;
 
 
 MERGE `ETL20A.Bounce_all_part` a
-USING `ETL20A.Bounce_temp_part` t
+USING `ETL20A.Bounce_stage_part` t
 ON t.SubscriberKey = a.SubscriberKey
 and t.jobid  = a.jobid
 and t.listid = a.listid
@@ -26,7 +26,7 @@ select * from ETL20A.Bounce_all_part t
 where t.EventDateDate between parse_date("%Y%m%d", from_date) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.ClickReportPush_all_part` a
-USING `ETL20A.ClickReportPush_temp_part` t
+USING `ETL20A.ClickReportPush_stage_part` t
 ON t.ClickDate = a.ClickDate
 and t.deviceID = a.deviceID 
 and t.messageName = a.messageName 
@@ -34,7 +34,7 @@ and a.ClickDateDate >= date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.ClickReportPush_all_part` a
-USING `ETL20A.ClickReportPush_temp_part` t
+USING `ETL20A.ClickReportPush_stage_part` t
 ON t.ClickDate = a.ClickDate
 and t.deviceID = a.deviceID 
 and t.messageName = a.messageName 
@@ -47,7 +47,7 @@ select * from ETL20A.ClickReportPush_all_part t
 where t.ClickDateDate >= date_sub(parse_date("%Y%m%d", to_date), INTERVAL 15 DAY) ;
 
 MERGE `ETL20A.Clicks_all_part` a
-USING `ETL20A.Clicks_temp_part` t
+USING `ETL20A.Clicks_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -57,7 +57,7 @@ and a.EventDateDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.Clicks_all_part` a
-USING `ETL20A.Clicks_temp_part` t
+USING `ETL20A.Clicks_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -71,7 +71,7 @@ select * from ETL20A.Clicks_all_part t
 where t.EventDateDate between parse_date("%Y%m%d", from_date) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.Complaints_all_part` a
-USING `ETL20A.Complaints_temp_part` t
+USING `ETL20A.Complaints_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -81,7 +81,7 @@ and a.EventDateDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.Complaints_all_part` a
-USING `ETL20A.Complaints_temp_part` t
+USING `ETL20A.Complaints_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -95,7 +95,7 @@ select * from ETL20A.Complaints_all_part t
 where t.EventDateDate between parse_date("%Y%m%d", from_date) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.MobilePushDetailExtractReport_all_part` a
-USING `ETL20A.MobilePushDetailExtractReport_temp_part` t
+USING `ETL20A.MobilePushDetailExtractReport_stage_part` t
 ON 
 t.PushJobID = a.PushJobID
 and t.deviceID = a.deviceID
@@ -104,7 +104,7 @@ and a.DateTimeSendDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.MobilePushDetailExtractReport_all_part` a
-USING `ETL20A.MobilePushDetailExtractReport_temp_part` t
+USING `ETL20A.MobilePushDetailExtractReport_stage_part` t
 ON 
 t.PushJobID = a.PushJobID
 and t.deviceID = a.deviceID
@@ -117,7 +117,7 @@ select * from ETL20A.MobilePushDetailExtractReport_all_part t
 where t.DateTimeSendDate between date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.Opens_all_part` a
-USING `ETL20A.Opens_temp_part` t
+USING `ETL20A.Opens_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -127,7 +127,7 @@ and a.EventDateDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.Opens_all_part` a
-USING `ETL20A.Opens_temp_part` t
+USING `ETL20A.Opens_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -141,7 +141,7 @@ select * from ETL20A.Opens_all_part t
 where t.EventDateDate between parse_date("%Y%m%d", from_date) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.PushSendLog_all_part` a
-USING `ETL20A.PushSendLog_temp_part` t
+USING `ETL20A.PushSendLog_stage_part` t
 ON 
 t.PushJobID = a.PushJobID
 and t.deviceID = a.deviceID
@@ -152,7 +152,7 @@ WHEN MATCHED THEN DELETE;
 
 
 MERGE `ETL20A.PushSendLog_all_part` a
-USING `ETL20A.PushSendLog_temp_part` t
+USING `ETL20A.PushSendLog_stage_part` t
 ON 
 t.PushJobID = a.PushJobID
 and t.deviceID = a.deviceID
@@ -166,7 +166,7 @@ select * from ETL20A.PushSendLog_all_part t
 where t.logDateDate between parse_date("%Y%m%d", from_date) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.SendLog_all_part` a
-USING `ETL20A.SendLog_temp_part` t
+USING `ETL20A.SendLog_stage_part` t
 ON t.BatchId = a.BatchId
 and t.SubscriberKey = a.SubscriberKey
 and t.JobID = a.JobID
@@ -175,7 +175,7 @@ and a.logDateDate >= date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.SendLog_all_part` a
-USING `ETL20A.SendLog_temp_part` t
+USING `ETL20A.SendLog_stage_part` t
 ON t.BatchId = a.BatchId
 and t.SubscriberKey = a.SubscriberKey
 and t.JobID = a.JobID
@@ -188,7 +188,7 @@ select * from ETL20A.SendLog_all_part t
 where t.logDateDate between date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.Sent_all_part` a
-USING `ETL20A.Sent_temp_part` t
+USING `ETL20A.Sent_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -198,7 +198,7 @@ and a.EventDateDate >= date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.Sent_all_part` a
-USING `ETL20A.Sent_temp_part` t
+USING `ETL20A.Sent_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -212,7 +212,7 @@ select * from ETL20A.Sent_all_part t
 where t.EventDateDate between date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.SmsSendLog_all_part` a
-USING `ETL20A.SmsSendLog_temp_part` t
+USING `ETL20A.SmsSendLog_stage_part` t
 ON 
 t.SmsJobID = a.SmsJobID
 and t.SmsBatchID = a.SmsBatchID
@@ -222,7 +222,7 @@ and a.logDateDate >= date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.SmsSendLog_all_part` a
-USING `ETL20A.SmsSendLog_temp_part` t
+USING `ETL20A.SmsSendLog_stage_part` t
 ON 
 t.SmsJobID = a.SmsJobID
 and t.SmsBatchID = a.SmsBatchID
@@ -236,7 +236,7 @@ select * from ETL20A.SmsSendLog_all_part t
 where t.logDateDate between date_sub(parse_date("%Y%m%d", from_date), INTERVAL 15 DAY) and parse_date("%Y%m%d", to_date);
 
 MERGE `ETL20A.SmsMessageTracking_all_part` a
-USING `ETL20A.SmsMessageTracking_temp_part` t
+USING `ETL20A.SmsMessageTracking_stage_part` t
 ON 
 t.SmsJobID = a.SmsJobID
 and t.SmsBatchID = a.SmsBatchID
@@ -246,7 +246,7 @@ and a.CreateDateTimeDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.SmsMessageTracking_all_part` a
-USING `ETL20A.SmsMessageTracking_temp_part` t
+USING `ETL20A.SmsMessageTracking_stage_part` t
 ON 
 t.SmsJobID = a.SmsJobID
 and t.SmsBatchID = a.SmsBatchID
@@ -261,7 +261,7 @@ where t.CreateDateTimeDate between parse_date("%Y%m%d", from_date) and parse_dat
 
 
 MERGE `ETL20A.Unsubs_all_part` a
-USING `ETL20A.Unsubs_temp_part` t
+USING `ETL20A.Unsubs_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid
@@ -271,7 +271,7 @@ and a.EventDateDate >= parse_date("%Y%m%d", from_date)
 WHEN MATCHED THEN DELETE;
 
 MERGE `ETL20A.Unsubs_all_part` a
-USING `ETL20A.Unsubs_temp_part` t
+USING `ETL20A.Unsubs_stage_part` t
 ON 
 t.SubscriberKey = a.SubscriberKey
 and t.sendid  = a.sendid

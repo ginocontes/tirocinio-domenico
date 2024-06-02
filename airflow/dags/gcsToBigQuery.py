@@ -13,18 +13,31 @@ default_args = {
 }
 
 # Function to get the first 10 files from a GCS bucket
-def list_gcs_files(bucket_name, prefix='', max_files=10):
+def list_gcs_files(bucket_name, prefix=''):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     blobs = bucket.list_blobs(prefix=prefix)
     files = [blob.name for blob in blobs]
-    return files[:max_files]
+    return files
+
+
+file_to_table_id = {
+    "clicks.csv": "clicks",
+    "cliente.csv": "cliente",
+    "email.csv": "email",
+    "invii.csv": "invii",
+    "journey.csv": "journey",
+    "microesiti.csv": "microesiti",
+    "notifiche.csv": "notifiche",
+    "sms.csv": "sms",
+    "unsub.csv": "unsub"
+}
 
 # Define the DAG
 with DAG(
     'gcs_to_bigquery',
     default_args=default_args,
-    description='A DAG to move files from GCS to BigQuery',
+    description='A DAG to move the marketing files from GCS to BigQuery',
     schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
@@ -41,17 +54,19 @@ with DAG(
 
     # Create a task for each file
     for gcs_file in gcs_files:
+        table_id = file_to_table_id[gcs_file.split("/")[-1]]
         gcs_to_bq_task = GCSToBigQueryOperator(
             task_id=f'gcs_to_bq_{gcs_file.split("/")[-1]}',
             bucket=bucket_name,
             source_objects=[gcs_file],
             destination_project_dataset_table=f'{dataset_id}.{table_id}',
-            schema_fields=[
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'},
-                # Add more fields as per your schema
-            ],
-            write_disposition='WRITE_APPEND',  # Change as per your requirement
+            # schema_fields=[
+            #     {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+            #     {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+            #     # Add more fields as per your schema
+            # ],
+            autodetect=True,
+            write_disposition='WRITE_TRUNCATE',  # Recreate the table from scratch
             google_cloud_storage_conn_id='google_cloud_default',
             bigquery_conn_id='google_cloud_default'
         )
