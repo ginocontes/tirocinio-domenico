@@ -1,0 +1,1267 @@
+%Documento
+\documentclass[a4paper,12pt]{report}
+
+%Stile Immagini
+\usepackage{graphicx} %Per inserire immagini
+\usepackage{caption} %Didascalie Immaigni
+\usepackage{svg}
+
+%Per simboli matematici
+\usepackage{amssymb}
+
+%Imposto Default Italiano
+\usepackage[italian]{babel}
+
+%Stile Pagine
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{} %Imposto gli header manualmente, l'automatico genera incongruenze
+\cfoot{}
+
+%Interlinea (1.5 richiesto)
+\linespread{1.25}
+
+%Stile Capitoli
+\usepackage{titlesec}
+\titleformat{\chapter}[display]%
+	{\bfseries\filleft}%
+	{\fontsize{6\baselineskip}{4\baselineskip}\selectfont\thechapter}{1ex}%
+	{\titlerule\fontsize{1.5\baselineskip}{3\baselineskip}\selectfont}[\titlerule]
+
+ %Inizio Documento
+\begin{document}
+%Elimino la numerazione per Indice, Introduzione e Ringraziamenti
+\pagenumbering{gobble}
+
+%Indice
+\renewcommand{\contentsname}{Indice}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+\tableofcontents
+\fancyhead{} %Svuoto header
+\fancyhead[L]{INDICE} 
+
+%Elenco Figure
+\listoffigures
+
+%Elenco Tabelle
+\listoftables
+
+
+\chapter*{Introduzione}
+\fancyhead{} %Svuoto header
+\fancyhead[L]{INTRODUZIONE} 
+
+Se si volesse ricercare la sorgente delle primissime esigenze di ottenere un vantaggio sui propri competitor dall’analisi e l’organizzazione di dati rilevanti per il business, il lontano 1865 è l’albore della Business Intelligence: strumenti e tecniche utilizzate dalle imprese mirate al prendere decisioni informate per il futuro, basandosi proprio sull’analisi ed organizzazione dei dati grezzi per trarne informazioni rilevanti.
+Incrementare il proprio vantaggio competitivo è sempre stato un obiettivo talmente critico per qualunque azienda che l’avvento di internet e gli sviluppi tecnologici dei primi anni duemila hanno sollevato l’importanza di gestire enormi volumi di dati: i cosiddetti “Big Data”. Social network, applicazioni, motori di ricerca… hanno reso esponenzialmente più grande la mole di dati utili alle imprese generata da ciascun utente e, in questa tesi, si sono voluti studiare tutti gli strumenti e le tecniche moderne che permettono, ad oggi, di gestire i Big Data e supportare una Business Intelligence che sia efficiente ed economica. Un’attenzione particolare si è data al ruolo rivestito dalle tecnologie di cloud computing nel Big Data Management, concentrandosi sugli strumenti forniti dal provider Google: la potenza e la scalabilità di Data Warehouse moderni come BigQuery permettono di apprezzare tutti i vantaggi di una transizione da ETL a ELT, esaminando dettagliatamente i processi che permettono di trattare i dati in modo da renderli congeniali all'utilizzo finale, oltre che efficientemente organizzati e reperibili. Questo elaborato di tesi si concentrerà sul mostrare un’applicazione pratica dei concetti e degli strumenti discussi: si analizzeranno esempi tratti da uno dei progetti a cui ho lavorato durante il periodo di tirocinio, coinvolgente uno dei principali istituti bancari italiani. Per una migliore comprensione, quest'elaborato di tesi si propone di analizzare un "mockup" di quanto realizzato nel suddetto progetto: l'implementazione di una pipeline di dati tramite software moderni come Airflow permetterà, ancor meglio, di comprendere il ruolo di tutti i concetti e gli strumenti precedentemente discussi nella disamina teorica; Airlfow risulta particolarmente congeniale alle esigenze didattiche essendo che tutte le funzionalità implementate tramite codice saranno ben visibili a livello grafico. Concludiamo dando spazio a come è e sarà possibile implementare in questo processo algoritmi di intelligenza artificiale per la gestione di dati non strutturati. 
+\addcontentsline{toc}{chapter}{Introduzione}
+
+%Aggiunta a Indice - Elenco Tabelle
+\addcontentsline{toc}{chapter}{Elenco delle Figure}
+
+%Aggiunta a Indice - Elenco Tabelle
+\addcontentsline{toc}{chapter}{Elenco delle Tabelle}
+
+%Capitolo 1
+\chapter{La Rivoluzione Big Data}
+%Intestazione
+\fancyhead{} %Svuoto header
+\fancyhead[L]{CAPITOLO 1. LA RIVOLUZIONE BIG DATA} %Reimposto
+\fancyhead[R]{\thepage} %Reimposto pagina
+%Imposto la numerazione per i contenuti da qui in poi
+\pagenumbering{arabic}
+
+Nel 2018 l’allora colosso dei social media Facebook, oggi appartenente al collettivo di Meta Platform Incorporated, si trovò a dover affrontare una causa legale su diversi fronti: l’azienda fu imputata di utilizzo improprio e non autorizzato dei dati riguardanti circa 87 milioni di profili iscritti alla piattaforma, violandone le normative di privacy. L’accusa sosteneva che Facebook ne avesse permesso l’accesso alla ormai defunta società di consulenza britannica “Cambridge Analytica”, che avrebbe poi utilizzato tali dati per influenzare il comportamento di elettori ed elettrici nelle presidenziali americane del 2016. La suddetta denuncia è uno degli esempi  più pertinenti dell’importanza che, ad oggi, rivestono i dati generati da ogni utente: tendenze, comportamenti comuni, previsioni… sono tutte informazioni sensibili, risultato di un’analisi efficiente di grandi volumi di dati, che le aziende utilizzano per valutare il proprio lavoro, collocarsi responsabilmente nel mercato o fornire annunci pubblicitari mirati, come nel caso di Facebook tra le tante. Si pensi all’attività “digitale” di ciascun utente: determinate ricerche su internet, visita di particolari siti web, utilizzo di specifiche applicazioni, acquisto di precisi prodotti… tutti conformi alle proprie preferenze; il concetto microeconomico stesso di “preferenza” è alla base del mercato e dei meccanismi di domanda e offerta che lo guidano. L’era dei “Big Data”, che ci prestiamo di cui a poco ad introdurre, tiene traccia di tutte le preferenze di un consumatore e le “maschera” sottoforma di grandi quantità di dati derivanti dall’attività digitale dell’utente stesso.
+Le fasi principali del processo di estrazione dell’informazione dai Big Data sono sintetizzate nello schema in figura, definito “Data Value Chain (DVC)”:
+%Img Cap 1.0
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{img/Cap1.0.png}
+    \caption{Data Value Chain}
+\end{figure}
+
+\begin{itemize}
+    \item Generazione: la prima fase della DVC comporta la generazione effettiva dei dati da varie sorgenti, analogamente a quanto discusso precedentemente con il concetto di “attività digitale”
+    \item Raccolta: fase cruciale dove i dati generati vengono trasmessi dalle loro sorgenti ad un punto comune di archiviazione. I dati passano attraverso un processo di computazione mirato a strutturarli in un formato congeniale alle applicazioni successive di “Analytics”, nonché rimuovo duplicati, incosistenze o formati errati, assicurandone la qualità; questa fase comprende tutte quelle operazioni che, generalmente, vengono definite come “data cleansing”
+    \item Analytics: fase dove si realizza concretamente la computazione sui dati e si prendono decisioni conformemente alle informazioni ricavate. All’effettivo la Business Intelligence è circoscritta a questo stadio
+    \item Scambio: l’ultima fase della DVC consiste nell’impiego effettivo delle informazioni estratte in “Analytics”; per “impiego” si intendono principalmente un utilizzo diretto o una vendita a terzi di tali informazioni. Nel caso di un utilizzo interno, questa fase consiste nell’applicazione formale delle decisioni di BI formulate in “Analytics”
+\end{itemize}
+
+\noindent In quest’elaborato di tesi ci collochiamo all’interno della fase di “Raccolta” e l’obiettivo che ci proponiamo è uno studio di tutti i principali strumenti, meccanismi e soluzioni moderne di supporto alla Business Intelligence: la fase di “Raccolta” si propone di fornire il dataset su cui verranno effettuate le computazioni ed, in un certo senso, vogliamo approfondire dettagliatamente non tanto la BI ad alto livello, come le tecniche stesse di analisi dei dati e la generazione di report, che comunque citeremo, ma gli aspetti infrastrutturali e tecnologici che sottendono al funzionamento dei sistemi di Business Intelligence moderni, rendendoli efficienti.
+\section{Grandi Volumi di Dati}
+“Big Data” è un termine la cui primissima apparizione risale all’inizio degli anni ‘90, sebbene l’exploit che lo ha reso popolare sia riconducibile al 2010. Come la maggioranza dei “neologismi” e le aree di studio moderne, ancora non esistono definizioni e regole a cui è possibile fare riferimento per descrivere rigorosamente tutte le caratteristiche e le novità dei Big Data; quello che ci proponiamo di realizzare è una panoramica generale delle differenze tra questi ed altre tipologie di dati, spesso definiti “Small Data” di conseguenza, sottolineando le grandezze con le quali normalmente li si definisce.
+Il grafico sottostante è uno sguardo alla quantità di dati generati dal 2010 ad oggi, con previsioni per il 2024 e il 2025, misurati in ZettaByte (miliardi di TeraByte):
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.462]{img/Cap1.1.png}
+    \caption{Andamento annuo dei dati generati - ZettaByte}
+\end{figure}
+\newpage
+\noindent
+L’impennata di dati generati è notevole e dal 2021 procede a ritmi costanti di circa il 23\% annuo, che si stima possa essere affidabile anche per 2024 e 2025. Ciò che davvero risalta all’occhio è l’enormità di questi dati: solo nel 2025 si stima che verranno generati 181 miliardi di TeraByte, pari circa alla somma di tutti i dati generati dal 2016 al 2020; se volessimo fare un paragone, per archiviarli tutti servirebbero altrettanti iPhone ultimo modello con massima capacità di storage (1 TeraByte)… Questi risultati sono sintomatici di come le aziende si trovino ad aver accesso ad una mole di dati esponenzialmente maggiore e, valida l’equazione più dati = più informazione, maggiori sono le esigenze computazionali. Se volessimo tenere traccia di tutti gli acquisti effettuati negli store di Roma di una certa multinazionale, allora sistemi di archiviazione dati tradizionali, come i database relazionali SQL, si dimostrerebbero ancora una valida alternativa; tuttavia, le multinazionali hanno migliaia di store nel mondo: se volessimo continuare ad utilizzare il modello relazionale tradizionale, probabilmente già ricavare quanto mediamente un certo cliente spenda, computando miliardi di acquisti, diventerebbero richieste troppo esose… Proprio da quest’esempio si solleva un punto importante: dataset esorbitanti, come quello che tiene traccia delle transazioni nel nostro esempio, si formano comunque sull’unione di dataset più semplici, come quelli di ogni store preso singolarmente. I “Big Data” sono grandi insiemi di “Small Data” che possiamo sintetizzare concettualmente come: dataset la cui dimensione è così vasta da superare le capacità dei sistemi hardware e software normalmente impiegati per gestire ed elaborare dati efficientemente o, comunque, entro tempi ragionevoli. Big Data e Small Data sono ambedue tipologie di dato e, quindi, per nulla differenti a livello logico: indipendentemente dai volumi, entrambe rimangono rappresentazioni intrinseche di informazione e la vera differenza risiede nel come vengano gestiti. I tradizionali database SQL si dimostrano poco efficienti non tanto perché il modello relazionale sia così inapplicabile ai Big Data, ma poiché si necessita di una quantità di risorse, in termini di capacità di calcolo e archiviazione, che non possono soddisfare. Essendo il modello relazionale, a cui sarà dedicata un’intera sezione, lo standard su cui de facto si costruisce la totalità del Data Management, sarebbe auspicabile che questo rimanga un’alternativa valida anche per Big Data: le tecnologie di Cloud Computing permettono di ovviare a tutte le limitazioni precedentemente discusse, costruendo ambienti dove database relazionali incontrano la scalabilità delle risorse Cloud, potendo stavolta soddisfare la domanda di storage e potenza di calcolo. Il Cloud Computing non costituisce l’unica alternativa possibile, anzi, l’importanza crescente dei Big Data negli ultimi anni ha portato a nuove soluzioni che, abbandonando il modello SQL, si dimostrano altrettano valide a livello prestazionale: framework come Hadoop e database NoSQL sono tra le architetture più utilizzate ad oggi, quali ci proporremo di raccontare in breve nei capitoli successivi.
+La dimensione dei Big Data, quello che viene comunemente definito “Volume”, non è l’unica differenza con gli Small Data: in uno studio del 2001 l’analista Douglas Laney ha definito il cosiddetto “modello delle 3V”, sottolineando le grandezze fondamentali che sintetizzano la complessità dei Big Data. Oltre che al già discusso “Volume” troviamo “Varietà” e “Velocità”, a cui dedichiamo le sezioni successive.
+\subsection{Varietà e Struttura}
+L’aumento dei dati generati in figura 1.2 sottolinea come, di conseguenza, ciascun utente di internet generi più dati pro capite. Il motore principale di questo fenomeno è riconducibile all’espansione del cosiddetto “Internet of Things (IoT)”: termine con cui si fa riferimento alla progressiva estensione di Internet a tutti gli oggetti del quotidiano, la cui digitalizzazione aumenta il volume di dati generati. Smartphones, smart home, assistenti virtuali, smartwatch… nel tempo non cambia solamente l’utilizzo che l’uomo fa della tecnologia, ma soprattutto la precisione della tecnologia stessa: sistemi software sempre più sensibili al catturare dati utili al fornire un’esperienza plasmata dalle attitudini del consumatore stesso, fonte d’informazione fondamentale alle imprese nel comprendere tutte le “preferenze” che muovono il mercato; “Varietà” è una proprietà indicante, appunto, la grande diversità tra le sorgenti che generano Big Data, il che porta a dover gestire dati in formati spesso diversi da quelli “convenzionali”.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/Cap1.2.png}
+    \caption{Differenti sorgenti di Big Data}
+\end{figure}
+\newpage
+\noindent
+Come discusso precedentemente, lo standard su cui de facto si costruisce il Data Management è il modello relazionale e, come vedremo nella sezione dedicata, questo organizza i dati in strutture ben definite: tabelle di righe e colonne; per il momento si pensi, seppur impropriamente, ad un database relazionale come un grande foglio Excel dove memorizziamo i nostri dati. I database relazionali, duplice la forte rigorosità strutturale, non sanno come comportarsi difronte a dati che non condividono lo stesso formato con il quale sono abituati a lavorare. Se ci venisse chiesto di memorizzare un’immagine in un file Excel probabilmente non sapremo cosa rispondere, analogamente si comporterebbero tutti i sistemi software che automatizzano il processo di memorizzazione dei dati in un relazionale. Questo concetto è così importante che i dati vengono distinti in categorie proprio a seconda del loro formato o “struttura”:
+\begin{itemize}
+    \item Dati Strutturati: molto spesso si definiscono “strutturati” tutti quei dati che sono organizzati in “strutture predefinite”. In realtà trovo ai fini didattici questa definizione un po’ fuorviante per il semplice fatto che, in un certo senso, ciascun dato ha una propria “struttura” intrinseca, indipendentemente da dove questo sarà memorizzato successivamente. Per questo propongo al lettore un’ulteriore definizione che ha una buona sinergia con quello di cui andremo a trattare: si definiscono “strutturati” tutti quei dati che sono facilmente memorizzabili in un database relazionale e computabili da opportuni linguaggi, SQL tra tutti, o “queryable” come si intende tipicamente in letteratura; esempi semplici di dati strutturati sono fogli di cacolo Excel o risultati di form online, tra i tanti. Anche se impropriamente, un ulteriore esempio di dati strutturati sono i database relazionali essi stessi: i dati contenuti al loro sono facilmente trasferibili e gestibili in ulteriori relazionali; questo concetto potrebbe sembrare strano: perché si dovrebbero trasferire dati da un database relazionale ad un altro se questi sono già correttamente contenuti ed organizzati? Risponderemo a questa domanda con il “Data Warehousing” nel prossimo capitolo
+    \item Dati non Strutturati: sulla falsariga di quanto detto precedentemente, si definiscono “non strutturati” tutti quei dati che non sono facilmente memorizzabili in database relazionali, tantomeno “queryable” con linguaggi tradizionali. Esempi di dati non strutturati sono: documenti di testo, email, immagini, video, file audio… insomma, la stragrande maggioranza di dati che provengono da applicazioni di largo utilizzo quotidiano, come social network ad esempio. Non risulta così strana la stima effettuata dalla multinazionale di consulenza Gartner Inc. sui cosiddetti “enterprise data”: l’$80 - 90\%$ dei dati che le aziende generano e gestiscono sono non strutturati; la proporzione sul volume generale di Big Data non è così alta, ma comunque i non strutturati rappresentano la maggioranza dei dati prodotti ad oggi e per questo devono essere correttamente gestiti. Con buona approssimazione, è facile capire come il futuro del Data Management sarà, proprio, incentrato nel costruire modelli che possano ricavare più informazione possibile dagli “Unstructured Data” e trattarli con relativa facilità, particolarmente in voga, ad oggi, sono gli algoritmi di Intelligenza Artificiale per l’analisi di immagini, o “NLP - Natural Language Processing” per l’analisi di testo… Sebbene sia vero che i non strutturati costituiscano la maggioranza dei dati in un contesto enterprise, non risulta altrettanto vero che quest’ultimi siano, di fatto, i dati che per le aziende abbiano rilevanza sensibile: in quest’elaborato di tesi parleremo di tutte i moderne architetture di Data Management, basatesi comunque su dati a forte matrice relazionale, essendo che questo modello si presta ottimamente a descrivere oggetti del mondo reale e di stretta rilevanza per il business; email, video, file audio, immagini… perdono tutte un po’ di senso quando si tratta di muoversi sul mercato, o meglio, le informazioni che se ne potrebbero ricavare sono tranquillamente estrapolabili da contesti più agevoli e, per questo, non ne troveremo particolare interesse nelle discussioni a venire
+    \item Dati Semi - Strutturati: generalmente questi sono dati non così semplici da gestire in un relazionale come gli strutturati, tuttavia sicuramente più agevoli dei non strutturati; difatti è una tipologia di dato che sta “a cavallo” tra le due. Esempi di dati semi - strutturati sono file XML e JSON tra tutti, quest’ultimi saranno oggetto di discussione quando parleremo di Terraform. Il perché si faccia distinzione tra i dati semi - strutturati e strutturati è principalmente relativo alle esigenze computazionali nella fase “Transform” dei pattern ETL/ELT già accennati precedentemente: qui i dati strutturati, che già sono in un formato congeniale ai database relazionali, passano principalmente attraverso operazioni di “data cleansing” più che trasformazioni di formato effettive, i semi - strutturati presentano una sintassi che rende tali trasformazioni relativamente semplici ma, comunque, necessarie. La maggiore semplicità di processamento dei dati semi - strutturati è data dalla presenza, nel loro formato, di costrutti ricorrenti e ben noti agli algoritmi che li computano, quali “sanno dove e cosa cercare” per la formattazione
+\end{itemize}
+\subsection{Velocità ed Estensione alle "5V"}
+ Nel contesto dei Big Data, “Velocità” si riferisce alla rapidità con cui i dati vengono generati, raccolti e processati. La “Varietà” delle sorgenti che generano Big Data solleva un aspetto interessante e che, finora, ci siamo limitati a sottointendere: con la proliferazione dell’IoT e la generale digitalizzazione, l’aumento del volume di dati è proporzionale alla sempre più crescente velocità con cui questi vengono generati dalle sorgenti, indicata comunemente come “frequenza di generazione”; si pensi solamente alla mole di dati che generiamo ogni giorno con i nostri dispositivi mobili tramite semplici ricerche su internet o il banale utilizzo di social network… La “sensibilità” dei software moderni al catturare sempre più dati ha come risultato un del tutto naturale aumento della frequenza di generazione. Sebbene non sia tassativamente necessario un processamento “real - time” o “near real-time” di dati in qualsiasi contesto applicativo, è sicuramente vero che questo tipo di bisogni siano sempre più richiesti sul mercato, soprattutto in contesti aziendali: l’analisi di dati in tempo reale permette di identificare trend, cambiamenti, anomalie… nell’esatto momento in cui accadano, ottimizzando i processi decisionali; gran parte delle decisioni di Business Intelligence, infatti, vengono prese proprio analizzando dati in “streaming”. Una delle aree di studio più importanti quando si tratta di Big Data sono le reti di calcolatori: i dati viaggiano all’interno di opportune infrastrutture che collegano le sorgenti ai database che li archivieranno e i grandi volumi di questi dati implicano sicuramente delle prestazioni non banali richieste alle reti, quale evoluzione negli ultimi anni, esempio sono i costanti miglioramenti nelle tecnologie di fibra ottica, ha sicuramente contribuito alla proliferazione dei Big Data. Uno degli obiettivi di questa tesi è proprio discutere tutti gli strumenti e i meccanismi che permettono di raccogliere e processare i dati tanto velocemente quanto questi vengano generati, discutendo del "percorso” che seguono i dati più che dei mezzi trasmissivi essi stessi.
+ Il “modello delle 3V” fu successivamente esteso al “modello delle 5V” con l’aggiunta di due ulteriori grandezze: “Veridicità” e “Valore”. Fin dall’introduzione di questo capitolo si è discusso ampiamente del fondamentale “Valore” che ad oggi rivestono i Big Data e sarebbe, quindi, ridondante discuterne nuovamente; più interessanti sono gli spunti sollevati dalla “Veridicità”: più dati, più velocemente e da diverse sorgenti sono la sintesi più generale che si può realizzare dei Big Data, abbiamo discusso dell’importanza dell’analisi di questi e di tutte le informazioni che se ne possono ricavare e quello che la “Veridicità” sottolinea è la necessità di assicurasi che i dati computati siano accurati, corretti ed affidabili. Gran parte di quello che permette ai Big Data di essere “veritieri” sono tutti i già discussi processi di “data cleansing” che si occupano non solo di eliminare ridondanze, rimuovere duplicati o verificare che eventuali parametri siano rispettanti, ma anche di provvedere ad eventuali dati mancanti se questi sono ricavabili direttamente.
+ Ai fini di ciò di cui andremo a trattare, al “modello delle 5V” ne aggiungerei una sesta: la “Variabilità”. Come discusso precedentemente, l’aumento del volume dei dati generati non accenna a diminuire nei prossimi anni, con stime vicine ai 181 ZettaByte per il 2025… Sebbene queste siano solamente stime e, all’effettivo, il volume potrebbe essere molto di meno, non scordiamo che potrebbe anche essere molto di più: anche le architetture più moderne potrebbero idealmente diventare obsolete nel giro di pochi mesi, all’effettivo magari qualche anno, essendo che questo trend di crescita non accenna a diminuire. La “Variabilità” rende la cosiddetta “obsolescenza” degli strumenti di Big Data Management molto breve, per fare un esempio concreto: se si decidesse di strutturare un certo database per la gestione di Big Data se ne dovrebbe definire la logica di archiviazione dei dati, le performance richieste, la capacità… proprio questi tre concetti sono fondamentali, in quanto tutti determinanti nell’efficienza, o meno, di quest’ultimi. I database sono costituiti da componenti hardware che garantiscono determinate prestazioni in funzione della propria capacità, definita come il volume di dati che si stima questo dovrà sostenere, e qualora questa venisse ecceduta non ci sarebbero più garanzie sulle performance o i tempi di risposta che ci si aspetta prestazionalmente parlando. Costruire database o, più generalmente, sistemi per la gestione di Big Data non basandosi su tecnologie fortemente scalabili perde totalmente di senso, di conseguenza tratteremo dell’applicazione a questo campo della risorsa scalabile per eccellenza: il “Cloud Computing”.
+\section{Business Intelligence}
+La creazione di tecnologie capaci di gestire, raccogliere e trasformare l'enorme quantità di Big Data possedute dalle più grandi organizzazioni sarebbe fine a se stessa se non esistessero processi di business efficaci per estrarre valore dagli stessi.
+Le piattaforme di BI (Business Intelligence) ricoprono un ruolo da protagonista nell'era dei BigData per la loro importanza nei processi decisionali e strategici organizzativi. 
+Looker (Google), PowerBI (Microsoft), AWS QuickSight (Amazon) sono solo alcune di queste piattaforme, a cui si aggiungono SaaS specifici per le diverse funzioni organizzative. Per esempio il software sorgente nell'elaborazione dell'ELT di cui si parlerà in seguito è Salesforce Marketing Cloud, usato per la creazione e gestione di campagne di Marketing tramite email,notifiche, Sms ecc.
+Tramite l'utilizzo di Dashboard e creazione di KPI (key performance indicator) non soltanto le piattaforme di BI provvedono a tracciare andamento esistente del business, ma a illuminare azioni strategiche importanti per creare valore e avvantaggiarsi sulla competizione.
+Architetturalmente una moderna piattaforma di BI è progettata per essere collegata a Data Lake o Data Warehouse ottimizzazioti per query analitiche, i cosidetti OLAP (Online Analytical Processing), di cui parleremo nel prossimo capitolo. Particolare enfasi ricoprono ormai nuovi use case e dashboard di forecasting che prendono come sorgente dato gli output dati da modelli di machine learning. Per esempio uno dei progetti su cui ha lavorato un collega del gruppo Google Cloud di Accenture è una serie di dashboard Looker progettata per l'analisi e cattura dei pirati informatici per una grande cliente nel settore media e telecomunicazioni. Questa dashboard è alimentata da ELT con dati di streaming provenienti da kafka, transformati in BigQuery, con componente predittiva dato da un modello di machine learning allenato direttamente in BigQueryML. 
+
+
+
+%Capitolo 2
+\chapter{Sistemi di archiviazione dati}
+\thispagestyle{empty} %Rimuovi numerazione a piè nella pagina introduttiva
+\fancyhead{} %Svuoto header
+\fancyhead[L]{CAPITOLO 2. SISTEMI DI ARCHIVIAZIONE DATI} %Reimposto
+\fancyhead[R]{\thepage} %Reimposto pagina
+Come già discusso nel Captiolo 1 - “La Rivoluzione Big Data”, gestire efficacemente grandi volumi di dati per trarne più informazione possibile è diventato un elemento sempre più cruciale per il successo di imprese, organizzazioni e individui. Strumento principe per la soddisfazione di tali esigenze sono i database: sistemi organizzativi orientati alla raccolta, archiviazione e gestione di dati, fornendo accesso rapido e affidabile alle informazioni.
+\\[0ex]
+Nelle sezioni successive, a prescindere dalla criticità a livello hardware che i Big Data rappresentano per i database nella loro generalità, meglio discusse nella transizione “Cloud” trattata nel prossimo capitolo, discuteremo di come il modello relazionale venga esteso ad un versionamento più moderno, quello “ROLAP”, che permetta di gestire dati che, oltre al volume, richiedano di essere analizzati su diverse dimensioni, come quella temporale ad esempio, e di come questo sia sostanzialmente relativo all’utilizzo prettamente pratico del modello relazionale esso stesso, esplorandone diversi use case; è bene tenere a mente che tutti gli accorgimenti ed i best practice che apportateremo al modello relazionale non sono necessariamente sintomatici di un’inadeguatezza del modello, anzi, quanto ad una necessità di renderlo più efficiente ed adatto a soddisfare le richieste di analisi di dati in “tempo reale”, dove, altresì, verrebbe proprio meno questa caratteristica
+\section{Introduzione al Modello Relazionale}
+Si definiscono “Relazionali” tutti quei database che organizzano logicamente l’archivazione dei dati in tabelle di opportune righe e colonne. I database relazionali, fin dalla loro primissima definizione nel 1970, trovano ancora ad oggi larghissimo utilizzo proprio per la semplicità nella rappresentazione dei dati: la forma tabellare garantisce, oltre che efficienza nell’organizzazione anche di grandi quantità di dati, una facilità di gestione e comprensione difficilmente comparabile e, proprio per questo, il modello relazionale costituisce, ad oggi, praticamente uno standard a qualunque tipo di architettura di Data Management.
+Il concetto fondamentale alla base di qualunque database, indipendentemente dal modello relazionale, è la profonda differenza che c’è tra “informazione” e “dato”, in quanto quest’ultimi possono significare diverse cose, ovvero fornire diverse “informazioni”, a seconda del contesto in cui vengano collocati e i database si pongono, proprio, l’obiettivo di non rendere i dati ambigui; i relazionali sfruttano, come suddetto, opportune strutture tabellari per realizzare ciò. 
+Ciascuna tabella, in un database relazionale, rappresenta una particolare “entità”: sostanzialmente, rappresentazioni nel database di “oggetti” del mondo reale. I dati collocativi ne specificano determinate proprietà o caratteristiche, definiti comunemente come “attributi” dell’entità. Il modello relazionale si fonda sull’operazione matematica di “relazione”, definita formalmente come il risultato del prodotto cartesiano tra due o più insiemi, quale restituisce, all’effettivo, tutte le possibili combinazioni tra gli elementi degli insiemi presi in considerazione. In un database relazionale si fa particolarmente riferimento al concetto di “tupla” che, spesso e volentieri, viene fatta coincidere ad una singola riga di una delle tabelle del relazionale e, sebbene questo sia macroscopicamente vero, una “tupla” è, in realtà, uno dei risultati restituiti dall’operazione matematica di “relazione” effettuata tra tutti gli insieme di attributi che definiscono una stessa entità, più semplicemente: una “tupla” è una particolare configurazione dell’entità; una singola tabella di un database relazionale, rappresentante una particolare entità, è costituita da una colonna per ciascun attributo, tramite cui, associando quest’ultime tra loro, il modello costruisce una particolare rappresentazione dell’oggetto stesso, che coincide, appunto, con una singola riga, o “tupla”, della tabella stessa. Il concetto di “relazione matematica” impone la restituzione di tutti risultati distinti, ovvero tutte tuple tra loro differenti, da cui ne deduciamo come i relazionali, nella loro generalità, rappresentano entità distinte. Quest’ultimo risultato impone, per costruzione, che in ogni tabella ci sia almeno una colonna con tutti valori differenti: quest’ultima prende il nome di “Chiave Primaria” ed identifica univocamente ciascuna tupla, eventualmente formata da una o più colonne; il concetto di “Chiave Primaria” sarà fondamentale quando, nelle sezioni successive, discuteremo della progettazione concettuale di un base di dati relazionale. 
+\\[0ex]
+La necessità di effettuare complesse analisi sui dati porta, inevitabilmente, a dover esplorare diverse implementazioni del modello relazionale, principalmente orientate a quali siano le “operazioni più frequenti”, ovvero quelle da efficientare: computazionalmente, come vedremo, esistono diversi approcci per migliorare le performance del modello relazionale, come il passaggio da una struttura orientata a righe ad una orientata a colonne, sebbene il contesto Big Data imponga, comunque, di apportare alcuni cambiamenti alla progettazione stessa del modello, che tratteremo di seguito.
+
+\subsection{Il Linguaggio SQL}
+SQL, acronimo di “Structured Query Language”, è un linguaggio di programmazione progettato per gestire e manipolare database relazionali. Creato nei primi anni '70, SQL fornisce un insieme standardizzato di comandi che consentono agli sviluppatori di interagire con i database ed eseguire molteplici operazioni, tra cui: creazione ed eliminazione di tabelle, aggiornamenti, inserimenti, cancellazioni e modifiche di record, visualizzazioni… nonché varie computazioni; SQL è un linguaggio potente e con una sintassi di facile comprensione, punti di forza che si sposano perfettamente con la semplicità dei database relazionali. Il tipo di dialogo che si instaura con un database è spesso incentrato all’ottenere una risposta a determinate domande, tanto che si parla generalmente di “interrogazioni” o “query” al database, per cui SQL fornisce un vasto set di comandi che ci proponiamo di riassumere, fornendone una breve descrizione, in tabella "2.1".
+\begin{table}[ht]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|c|p{1.1\textwidth}|}
+            \hline
+            \textbf{SELECT} & Utilizzata per recuperare dati da una o più tabelle, specificando gli attributi (colonne) \\
+            \hline
+            \textbf{FROM} & Specifica la tabella o le tabelle da cui recuperare i dati nella clausola SELECT \\
+            \hline
+            \textbf{WHERE} & Aggiunge condizioni alla clausola SELECT per filtrare i dati in base a criteri specifici \\
+            \hline
+            \raisebox{-1.8ex}{\textbf{CREATE TABLE}} & Permette di creare tabelle specificando attributi e tipizzazione di questi. 
+            Definisce anche i nomi significativi con cui si fa riferimento a tabelle e colonne\\
+            \hline
+            \raisebox{-1.8ex}{\textbf{DROP TABLE}} & Permette di eliminare una tabella specificandone il particolare nome identificativo assegnato in CREATE TABLE\\
+            \hline
+            \raisebox{-1.8ex}{\textbf{INSERT INTO}} & Utilizzata per inserire nuovi record in una tabella. Specifica la tabella di destinazione e i valori da inserire nelle colonne corrispondenti. \\
+            \hline
+            \textbf{UPDATE} & Modifica i dati esistenti in una tabella \\
+            \hline
+            \textbf{DELETE} &  Elimina i dati da una tabella, utilizzata per rimuovere specifiche righe \\
+            \hline
+            \textbf{JOIN} & Combina dati da due o più tabelle in base a una condizione specificata \\
+            \hline
+              \raisebox{-0.1ex}{\textbf{GROUP BY}} & Consente l'applicazione di funzioni di aggregazione su particolari gruppi di tuple \\
+            \hline
+        \end{tabular}%
+    }
+    \caption{Istruzioni Fondamentali SQL}
+    \label{tab:istruzioniSQL}
+\end{table}
+Una famiglia di istruzioni a cui si farà spesso riferimento, in quest’elaborato di tesi, sono le cosiddette “funzioni di aggregazione”, quali discutiamo separatamente proprio per sottolinearne l’importanza: si definiscono “funzioni di aggregazione” tutte quelle istruzioni utilizzate per eseguire calcoli su un certo sottoinsieme di dati, restituenti un singolo valore di sintesi risultato di operazioni matematico/statistiche applicatevi. 
+Riassumiamo anch’esse, nelle stesse modalità precedenti, nella tabella "2.2".
+Ciascun database non gestisce autonomamente qualunque richiesta e, in realtà, non è nativamente capace, ovviamente, di comprendere il linguaggio SQL; tutti questi compiti vengono delegati ad uno strato software preliminare: i “Database Management System - DBMS”. I DBMS sono sistemi software progettati per la creazione, manipolazione e gestione di database, offrendo all’utente un’interfaccia dove è possibile inserire le proprie query e visualizzare le risposte, nonché molti di questi possano tradurre generici input proprio in istruzioni SQL. Uno dei compiti fondamentali, tra i tanti, dei DBMS e che tratteremo con particolare attenzione in questa sezione è il cosiddetto “memory management”: c’è un’importante correlazione tra la logica di memorizzazione e l’efficienza di un database rispetto a determinate operazioni, concetto fondamentale per le discussioni a venire. La breve digressione fornita su SQL è uno dei cardini concettuali di quest’elaborato di tesi: le decisioni di Business Intelligence spesso comportano la necessità di effettuare interrogazioni parecchio complesse, comprensive di molti JOIN e funzioni di aggregazione non indifferenti computazionalmente; come discusso nel “Capitolo 1”, tra gli obiettivi fondamentali di questa tesi c’è l’analisi di tutte le soluzioni e gli strumenti moderni per garantire efficienza alle “Business Analytics” e, proprio, l’assicurare tempi di risposta brevi a query computazionali sarà il motivo che ci spingerà, successivamente, a parlare di Data Warehousing.
+
+\begin{table}[ht]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|c|p{1\textwidth}|}
+            \hline
+            \textbf{COUNT()} & Restituisce il numero totale di righe soddisfacenti condizioni specifiche \\
+            \hline
+            \textbf{SUM()} & Calcola la somma dei valori della colonna indicata, se questa è numerica \\
+            \hline
+            \textbf{AVG()} & Calcola la media dei valori della colonna indicata, se questa è numerica \\
+            \hline
+            \textbf{MIN()} & Restituisce il minimo tra i valori della colonna indicata \\
+            \hline
+            \textbf{MAX()} & Restituisce il massimo tra i valori della colonna indicata \\
+            \hline
+        \end{tabular}%
+    }
+    \caption{Funzioni di Aggregazione SQL}
+    \label{tab:istruzioniSQL}
+\end{table}
+
+\subsection{Progettazione Concettuale di una base di dati}
+La costruzione di un modello relazionale che rispecchi al meglio la realtà di interesse è un processo complesso ed iterativo, comprensivo di diverse fasi che spaziano dalla progettazione concettuale alla realizzazione logica e fisica tramite la costruzione di schemi basati su una specifica tecnologia, come MySql, Postgres, SqlServer…
+La progettazione concettuale consiste, in buona sostanza, nel modellare entità e relazioni che, tra loro, catturino i requisiti fondamentali del sistema da realizzare. L'artefatto principe di questo lavoro è il cosiddetto “Diagramma ER”, acronimo di “Entity-Relationship”, base fondamentale su cui si implementa il database stesso.
+\\[0ex]
+La fase iniziale per la costruzione di un buon modello ER e, quindi, di un buon database, è la raccolta dei requisiti da parte degli stakeholder che commissionano o utilizzano il sistema: è una fase molto delicata poiché difficilmente standardizzabile o automatizzabile, nonché espressa in linguaggio naturale, quindi intrinsecamente ambiguo. Utenti diversi usano terminologie diverse, spesso incoerenti e contraddittorie.
+\\[0ex]
+Completata la fase preliminare di raccolta, si procede con l'analisi dei requisiti stessi, espressa anch’essa in un linguaggio naturale, ma più tecnico, in quanto effettuata, stavolta, da progettisti e personale tecnico. In questa fase, l'obiettivo è definire un glossario con il giusto grado di astrazione e introdurre uno stile sintattico preciso. Una volta definiti i requisiti, il progettista è pronto per la costruzione di un diagramma Entity Relationship.
+\\[0ex]
+Il modello ER fu concepito, in letteratura, per fornire una notazione standard alla schematizzazione della struttura logica dei database, indipendentemente dalla tecnologia utilizzata, offrendo il vantaggio di una rappresentazione visiva standardizzata ed intuitiva. Il modello ER si fonda sui tre concetti fondamentali di entità, relazioni tra entità e tra attributi, alcuni già accennati nella descrizione al modello relazionale, di cui, per una migliore comprensione, proporremo l’analisi di un esempio di diagramma ER, rappresentante una piccola parte di un’applicazione social network, di cui riportiamo il modello completo, a cui faremo spesso riferimento successivamente, in "Figura 2.1"; l’implementazione seguente sfrutta la diffusa notazione “Crow’s Foot”: particolarmente utile, come vedremo, per rappresentare la cardinalità delle relazioni, ovvero il numero di istanze di un'entità che possono essere associate ad un'altra entità. 
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/ERCompleto.png}
+    \caption{Schema ER "Social Network"}
+\end{figure}
+
+\subsubsection{Entità}
+Similmente a quanto discusso nella sezione precedente, un’entità è un oggetto astratto o concreto di cui si vogliono catturare determinate caratteristiche e rappresentarle all’interno della base di dati. Tali caratteristiche vengono definite attributi ed hanno dei valori che, congiuntamente, identificano univocamente l’oggetto; in particolare: un sottoinsieme di uno o più attributi è una chiave se identifica univocamente l’istanza dell’entità tra tutte le altre istanze. L’entità può essere considerata una sorta di “blueprint” che definisce come si creino, nel database, le istanze che ne fanno parte, similmente a come una “classe”, in un qualunque linguaggio OOP, definisca un “blueprint” per gli oggetti creati tramite la stessa. Visivamente, nel diagramma ER viene schematizzata in un rettangolo bipartito composto da: un’intestazione, riportante il nome dell’entità, e un “payload” che ne contiene tutti gli attributi. Gli attributi si distinguono, poi, in attributi “semplici”, come quelli della figura , o “complessi”, come ad esempio un attributo “indirizzo”, contenente al suo interno via, numero, cap, città… la distinzione che si fa spesso è tra attributi “atomici”, ovvero non ulteriormente scomponibili, e “non atomici”, quindi ulteriormente scindibili in attributi distinti, concetto che verrà ripreso successivamente.
+\subsubsection{Relazioni}
+Introducendo il modello relazionale abbiamo gà fornito una definizione, abbastanza superficiale, di relazione, che potremmo formalizzare in:  siano $D_1$, $D_2$,…, $D_n$ i diversi insiemi di attributi che definiscono una singola entità, allora una relazione $R$ è definibile come l’insieme di n - uple ordinate $\{(v_1,v_2,...,v_n)|v_1\in D_1,v_2\in D_2,...,v_n \in D_n\}$, dove l’n - upla ordinata $(v_1,v_2,...,v_n)$ è, in buona sostanza, una singola tupla, ovvero un sottoinsieme del prodotto cartesiano tra tutti i $D_i$, permettendoci di estendere la definizione di relazione ad una singola tabella del modello relazionale. In un diagramma ER, tuttavia, si esplora il concetto di relazione differentemente da quanto definito in precedenza: si studiano le relazioni come associazioni tra entità. In un ER una relazione lega, quindi, più entità tra loro ed è principalmente caratterizzata dalla molteplicità con cui possa effettuare tali collegamenti.
+Si distinguono, in questo senso, le seguenti molteplicità:
+\begin{itemize}
+    \item One-to-One: le relazioni “One-to-One” permettono di collegare singolarmente, come suggerisce il nome,  ciascuna istanza $e_i$  di un’entità $E_i$ ad una sola instanza $e_j$ di un’entità $E_j$; questo è il caso della relazione “Configura” tra Utente ed Account in "Figura 2.1"
+    \item One-to-Many:  le relazioni “One-to-Many” permettono di collegare singolarmente ciascuna istanza $e_i$ dell’entità $E_i$ ad un qualsiasi numero di $e_j$ dell’entità $E_j$; è il caso di un Utente che può pubblicare qualsiasi numero di Post, oppure di un post che può avere qualsiasi numero di commenti
+    \item Many-to-One: le relazioni “Many-to-One” permettono di collegare un qualsiasi numero di entità $e_i$ di $E_i$ ad una singola entità $e_j$ di $E_j$; è il caso di un insieme di entità “Commento” che, appunto, può appartenere ad un singolo post
+    \item Many-to-Many:  un qualsiasi numero di entità $e_i$ di $E_i$ può essere associato ad un qualsiasi numero di entità $e_j$ di $E_j$, e viceversa; è il caso di un utente che può mettere “like” a diversi post e diversi post possono essere piaciuti da altrettanti utenti
+    
+\end{itemize}
+\noindent
+ER è uno standard molto più vasto di quello che abbiamo avuto modo di descrivere: estensioni, Entità e relazioni Deboli, ereditarietà… sono solo alcuni degli strumenti per modellare basi di dati reali e molto più complesse dell’esempio, abbastanza didattico, che abbiamo discusso. Nel successivo paragrafo vedremo brevemente come usare la progettazione concettuale come punto di partenza per la creazione un database relazionale.
+
+\subsection{Riduzione ER in schema relazionali}
+In questa sezione, mostreremo come tradurre, ad alto livello, il diagramma ER in istruzioni SQL, ovvero come creare lo schema di un database relazionale dal suo modello ER, rispettando i vincoli di Primary Key e molteplicità; useremo “Postgres”, uno dei più utilizzati RDBMS, per l’implementazione del diagramma ER in “Figura 2.1”.
+
+\subsubsection{Rappresentare Entità}
+Se $E$ è un entità con attributi semplici $(a_1,a_2,...,a_n)$, l’entità stessa può tradursi in uno schema relazionale $E$, una tabella in sostanza, con $n$ attributi distinti.
+\begin{verbatim}
+    CREATE TABLE Utente{
+        ID INT NOT NULL PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        surname VARCHAR(50) NOT NULL,
+        gender VARCHAR(5) NOT NULL
+    };
+\end{verbatim}
+
+\noindent
+Per attributi complessi si introduce, generalmente, schema relazionale con una foreign key all'interno dell'Entita che punta a questo nuovo schema relazionale.
+
+\subsubsection{Rappresentare Relazioni}
+Anche rappresentare una relazione ER comporta la creazione di uno schema relazionale, in particolare: per ogni relazione individuata nel diagramma ER, si introduce uno schema relazionale formato dalle chiavi delle entità coinvolte nella relazione e l’unione tra gli attributi della stessa; questa procedura lascia spazio a ottimizzazioni ed eliminazioni di ridondanza, dipendentemente dalla molteplicità della relazione modellata.
+Per relazioni “One-to-One” si può evitare di creare tabelle aggiuntive e si può decidere, indifferentemente, se memorizzare la “Foreign Key” in una delle entità coinvolte nella relazione.
+\\[0ex]
+Volendo fornire un esempio: possiamo scegliere nella relazione “Configura”, tra le entità “Utente” e “Account”, se usare “account\textunderscore id” nella tabella Utente come una “Foreign key” che punta all’ID della tabella Account, oppure “user\textunderscore id” con gli stessi meccanismi; modelliamo questa seconda possibilità.
+\begin{verbatim}
+    CREATE TABLE Account {
+        ID INT NOT NULL PRIMARY KEY,
+        privacy_level VARCHAR(50) NOT NULL,
+        timestamp_creazione VARCHAR(50) NOT NULL,
+        is_premium VARCHAR(5) NOT NULL,
+        user_id INT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES Utente(ID)
+    };
+\end{verbatim}
+\noindent
+Per relazioni “One-to-Many” o “Many-to-One” i ragionamenti sono gli stessi, con l’unico accorgimento di aggiungere la “Foreign Key” nello schema relazionale della “parte Many”, non più indifferente come il caso “One-to-One”
+\begin{verbatim}
+    CREATE TABLE Post {
+        ID INT NOT NULL PRIMARY KEY,
+        content VARCHAR(255) DEFAULT '',
+        creator_id INT NOT NULL,
+        FOREING KEY (creator_id) REFERENCES User(ID)
+    };
+\end{verbatim}
+Per relazioni “Many-to-Many” non è, invece, possibile memorizzare la “Foreign Key” in una delle tabelle coinvolte nella relazione, proprio perchè ogni entità può essere coinvolta più di una volta e cadono i meccanismo precedenti. In questo caso, si crea una tabella intermedia che contiene “Foreign Key” per ogni entità coinvolta nella relazione; ad esempio, per la relazione “Many-to-Many” “Piace”, creiamo la seguente tabella intermedia:
+\begin{verbatim}
+    CREATE TABLE Piace{
+        ID INT NOT NULL PRIMARY KEY,
+        creator_id INT NOT NULL,
+        post_id INT NOT NULL,
+        FOREIGN KEY(creator_id) REFERENCES User(ID),
+        FOREIGN KEY(post_id) REFERENCES Post(ID)
+    };
+\end{verbatim}
+\subsection{Normalizzazione}
+Nella sezione precedente si era accennato al concetto di “ridondanza” in merito alla traduzione in schema relazionale del proprio modello ER. Per “ridondanza” si intende, in buona sostanza, la ripetizione di un medesimo dato su più tuple, cui presenza, oltre che un evidente spreco di memoria, causi problemi importanti a tutte le operazioni fondamentali in un relazionale, risultando, quindi, una condizione assolutamente da evitare. Proprio per questo nascono le cosiddette “Forme Normali”: particolari metodi di organizzazione della struttura tabellare di un relazionale, utili all’evitare ridondanze e, di conseguenza, tutti quei “problemi” accennati precedentemente, spesso definiti in letteratura “anomalie”. Discutendo di tali più in dettaglio:
+\begin{itemize}
+    \item Anomalie di cancellazione: presenti quando l’eliminazione di un record non permette di mantenere, almeno parzialmente, alcuni valori all’interno del database, a meno che non si accetti di inserire valori nulli nella chiave associata
+    \item Anomalie di inserimento: presente quando, sebbene si abbiano dati sufficienti, non risulta possibile rappresentare l’informazione se non tramite l’inserimento di valori nulli nelle chiavi associate, spesso sintomatico di uno schema relazionale le cui entità siano, in realtà, scindibili in entità più semplici
+    \item Anomalie di aggiornamento: presente quando l’aggiornamento di un singolo attributo comporti l’aggiornamento di più di una tupla
+\end{itemize}
+È dimostrabile, ed evitiamo di farlo poiché esula dagli scopi di questa tesi, che una buona modellazione ER, ed una corretta traduzione in SQL, permetta allo schema relazionale risultato di rispettare le condizioni della “Terza Forma Normale - 3NF”, riducendo gli effetti della ridondanza ad una soglia accettabile. Un’aspetto di fondamentale importanza ai discorsi a venire è proprio questo concetto di “Normalizzazione” come organizzazione dello schema SQL in diverse tabelle distinte, aspetto facilmente deducibile dalla traduzione del modello ER in schema relazionale, dove le principali query vengono soddisfatte tramite operazioni di JOIN più o meno complesse a seconda della molteplicità della relazione; “denormalizzare” vuol dire, in buona sostanza, diminuire il numero di JOIN mediamente eseguiti, concetto che richiameremo spesso nelle sezioni successive
+
+\section{Database Orientati a Righe o Colonne}
+Finora ci siamo soffermati ad un livello di astrazione più alto, studiando come vengono organizzati logicamente i dati in un relazionale; quello che vogliamo discutere, adesso, è come vi vengano memorizzati fisicamente. I database relazionali si articolano in due principali tipologie: orientati a colonne e orientati a righe. Questa distinzione nasce proprio dal come vi vengano memorizzati i dati: se le righe sono memorizzate in sequenza si parla di “database relazionali orientati a righe”, altrimenti “orientati a colonne” se sono quest’ultime ad essere archiviate contiguamente in memoria. Il controllo dei meccanismi di memorizzazione è affidato ai DBMS, già discussi nella precedente sezione su SQL. La distinzione tra database relazionali orientati a righe o colonne risulta di fondamentale importanza poiché, sebbene siano entrambi relazionali, la scelta di uno piuttosto che dell’altro può essere vincolata dal particolare utilizzo che ne si debba fare, o meglio, da quali operazioni siano più frequenti: i database relazionali orientati a righe sono più efficienti quando si tratta di inserimenti, letture, eliminazioni e modifiche, d’altro canto i colonnari sono molto più efficienti quando si tratta di computazioni sui dati, cui operazioni di somma, media, conteggio, calcolo del minimo o del massimo… molto più efficienti, quindi, quando si tratta di fornire risposta a query SQL comprendenti tutte le funzioni di aggregazione  già discusse la scorsa sezione. In un database relazionale orientato a righe, la memorizzazione dei dati avviene, come suddetto, contiguamente in sequenza.
+%Img Cap 2
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/SchematizzazioneOrientatoRighe.png}
+    \caption{Memorizzazione Orientata a Righe}
+\end{figure}
+\\[0ex]
+Risulta immediato comprendere come uno dei punti di forza di questi database sia proprio la facilità d’inserimento, in quanto l’aggiunta di una nuova tupla comporta unicamente l’accodamento dei dati da inserire, come esemplificato in figura.
+D’altra parte, l’eliminazione di un certo record impone una fase preliminare di ricerca: la sequenza di dati memorizzata viene valutata dall’estremo iniziale a quello finale, effettuando confronti per trovare la tupla, o le tuple, da eliminare rispetto ad una determinata condizione. Il vantaggio dei relazionali orientati a righe, anche qui, è l’immediatezza dell’operazione: trovata la corrispondenza, il record è relativamente facile da eliminare, essendo che tutti i suoi attributi sono memorizzati contiguamente in memoria e non sono richieste operazioni ulteriori; si noti come si è presupposta una logica di ricerca dove venisse valutata la totalità della sequenza di dati, tuttavia si attuano spesso tecniche di hashing o indicizzazione in modo da ottimizzare anche questo processo. Analoghi ragionamenti possono essere effettuati per le operazioni di lettura, rese efficienti dalle medesime conclusioni sulla contiguità dei dati in memoria.
+D’altro canto, nei database colonnari non sono più le tuple ad essere memorizzate contiguamente, bensì le colonne, ovvero gli attributi dell’entità rappresentata.
+%Img Cap 2.8
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/SchematizzazioneOrientatoColonne.png}
+    \caption{Memorizzazione Orientata a Righe - 2}
+\end{figure}
+\\[0ex]
+Spesso, più che una logica a disco singolo, come in figura, vengono adottate discipline di memorizzazione a dischi multipli: le colonne vengono memorizzate contiguamente in componenti hardware distinte (hard disk, SSD…) e questa soluzione è quella che, all’effettivo, rende i database colonnari l’alternativa più efficiente nel performare interrogazioni comprendenti funzioni di aggregazione, ovvero tutte quelle “query analitiche” strumento principe della Business Intelligence: i DBMS che gestiscono i colonnari conoscono a priori qual è il disco di memoria contenete i dati da aggregare e non hanno bisogno di computare quantità di dati più grandi di quelle che sono strettamente necessarie.
+%Img Cap 2.9
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.45]{img/OrientatoColonneDischi.png}
+    \caption{Memorizzazione - Orientato a Colonne}
+\end{figure}
+\\[0ex]
+Spesso, più che una logica a disco singolo come in figura, vengono adottate discipline di memorizzazione a dischi multipli: le colonne vengono memorizzate contiguamente in componenti hardware distinte (hard disk, SSD…) e questa soluzione è quella che, all’effettivo, rende i database colonnari l’alternativa più efficiente nel performare query comprendenti funzioni di aggregazione.
+Un’esecuzione generica, quindi, di qualunque funzione di aggregazione, valutata su uno o più attributi, viene effettuata solo sui dischi strettamente competenti, a differenza della logica orientata a righe che, invece, dovrebbe valutare l’intera sequenza in memoria da capo a capo.
+\\[0ex]
+In database di questo tipo, l’aggiunta di nuovi record comporta l’accodamento dei singoli attributi ai dati preesistenti per ogni disco di riferimento: questo esige, ovviamente, più operazioni di I/O rispetto ai database relazionali orientati a righe, intese come operazioni di lettura e scrittura dei dati. Anche l'aggiornamento di uno o più attributi di una tupla, o di più tuple, implica un numero significativamente più alto di operazioni di I/O rispetto ad una stessa richiesta effettuata ad un database orientato a righe: questo è particolarmente evidente nel caso di aggiornamenti che coinvolgono più di un attributo alla volta, in quanto potrebbe essere necessario operare su diversi dischi invece di effettuare update diretti sfruttando la contiguità dei dati. Ragionamenti analoghi possono essere effettuati per le operazioni di lettura o di eliminazione. Possiamo riassumere tutto in un più semplice: i database colonnari sono molto meno performanti delle controparti orientate a righe quando si tratta di operazioni di inserimento, modifica ed eliminazioni o, più generalmente, operazioni “transazionali”, concetto che verrà chiarito successivamente. Questa distinzione è fondamentale ad introdurre le due principali categorie di database più utilizzate, ad oggi, “sul campo” in contesti aziendali: database OLAP e OLTP, ai quali dedichiamo le sezioni a seguire.
+\subsection{Sistemi OLTP}
+OLTP - OnLine Transactional Processing è una particolare tipologia di database relazionale orientata al supporto di molte delle operazioni con cui si interagisce quotidianamente, all’interno e all’esterno del contesto aziendale: bancomat, online banking, sistemi di prenotazione, gestione degli stock… Proprio il concetto di “transazione” è fondamentale e, considerando il “Transactional Processing” che costituisce l’acronimo OLTP, talvolta fuorviante. Per “transazione” non si intende l’accezione finanziaria del termine, bensì “transazione di database”: insieme di operazioni la quale corretta esecuzione produca un effettivo cambiamento all’interno del database. Una transazione rappresenta, appunto, un’unità logica di lavoro comprendente una o più query SQL orientate principalmente alle operazioni di inserimento, modifica ed eliminazione di record; tali query includeranno le istruzioni di INSERT INTO, UPDATE e DELETE già discusse nella disamina su SQL. In letteratura, tutte le proprietà fondamentali di una “transazione di database” vengono sintetizzate nell’acronimo “ACID - Atomicity, Consistency, Isolation, Durability” che vediamo in dettaglio:
+\begin{itemize}
+    \item Atomicity: nei database OLTP ciascuna transazione viene considerata come un processo unico ed indivisibile. I DBMS che gestiscono le transazioni in questo tipo di database fanno particolare attenzione al prevenire aggiornamenti “parziali”: l’insieme di operazioni che la singola transazione comprende è tale che o tutte vengono eseguite con successo o il processo viene abortito completamente
+    \item Consistency: la corretta esecuzione di una transazione garantisce il rispetto dei vincoli di integrità del database stesso. Per vincoli di integrità si intende quella classe di proprietà e caratteristiche che tutti i dati nell’archivio devono rispettare, tanto che inserimenti o modifiche devono far si che i cambiamenti effettuati non violino tali vincoli, quali l’inesistenza di valori nulli sulle chiavi, o tuple duplicate
+    \item Isolation: i DBMS OLTP spesso eseguono più transazioni concorrentemente e la proprietà di isolamento garantisce, semplicemente, che lo stato finale del database sia lo stesso che si raggiungerebbe eseguendo le transazioni sequenzialmente
+    \item Durability: i risultati dell’esecuzione della transazione non devono essere più persi nemmeno in caso di malfunzionamenti tecnici. Questa proprietà spiega come una transazione di database si articoli, poi, nell’aggiornamento anche di eventuali log o storage di backup che riportano tutte le operazioni effettuate sul database per ovviare a queste situazioni di criticità 
+\end{itemize}
+SQL fornisce delle istruzioni particolari per marcare la query corrente come “transazione di database” al DBMS, riassunte nella seguente tabella:
+\begin{table}[ht]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|c|p{1\textwidth}|}
+            \hline
+            \textbf{BEGIN TRANSACTION()} & Indica l’inizio della transazione\\
+            \hline
+            \raisebox{-1.8ex}{\textbf{COMMIT}} & Formalizza la fine della transazione, unicamente se tutte le operazioni hanno avuto successo  \\
+            \hline
+            \raisebox{-1.8ex}{\textbf{ROLLBACK}} & Permette di annullare le modifiche effettuate dalla transazione all’occorrenza di errori in esecuzione di una delle operazioni \\
+            \hline
+        \end{tabular}%
+    }
+    \caption{Istruzioni SQL per Transazioni}
+    \label{tab:TransazioniSQL}
+\end{table}
+\\[1ex]
+Senza indicare la query come una transazione con “BEGIN TRANSACTION” il rispetto delle proprietà “acide” non è garantito: le tre istruzioni sopracitate costituiscono lo scheletro fondamentale per la stragrande maggioranza di richieste che un database OLTP si trova a dover rispondere nel caso più generale.
+L’esigenza di approfondire al meglio il concetto di “transazione di database” viene naturale se, come nel nostro caso, l’obiettivo è quello di comprendere le principali esigenze progettuali alla base dei database OLTP. Se una transazione comprende unicamente operazioni che alterino all’effettivo il dataset, ciò implica che un database OLTP non si troverà mai a dover rispondere ad una query analitica: l’aggregazione di dati comporta la restituzione di un valore di sintesi che non modifica in alcun modo lo stato corrente del database, a differenza delle suddette operazioni di inserimento, modifica ed eliminazione che, invece, alterano il dataset successivo alla corretta esecuzione di una di queste. Se si decidesse di adottare un modello relazionale, l’implementazione OLTP verrebbe con relazionali orientati a righe proprio perché più efficienti per questo tipo di operazioni, difatti l’applicazione di un database colonnare perde di senso quando si è, come in questo caso, totalmente esenti da qualunque tipo di query analitica. Ulteriore aspetto progettualmente cruciale dei database OLTP è garantire tempi di risposta il più brevi possibile, difatti la restante parte dell’acronimo non ancora discussa recita “OnLine”: da questo tipo di database ci si aspettano risposte in tempo reale alle richieste degli utenti, nonché una necessità di dati costantemente aggiornati.
+Un aspetto di fondamentale importanza riguarda la "profondità storica" dei dati archiviati in un sistema OLTP: in genere ci si concentra sulle transazioni recenti o su un intervallo temporale relativamente breve, più che fornire un dataset accurato e affidabile per finestre temporali più estese. La ragione di questa limitazione risiede nella natura stessa dei database OLTP discussa in precedenza: questi sono ottimizzati per le query transazionali e non analitiche, di conseguenza non ha senso costruire un database capace di gestire ampi volumi di dati su orizzonti temporali estesi poiché la filosofia OLTP si “limiterà” sempre al gestire transazioni in tempo reale, “OnLine” appunto . Prendiamo come esempio la massima profondità temporale fornita per lo storico delle transazioni dai sistemi di online banking di quattro tra i maggiori istituti di credito italiani, che riassumiamo nella tabella sottostante: 
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Banca} & \textbf{Storico Transazioni} \\
+        \hline
+        Fineco & 2 anni \\
+        \hline
+        Intesa San Paolo & 13 mesi \\
+        \hline
+        Unicredit & 6 mesi \\
+        \hline
+        PosteItaliane & 20 movimenti \\
+        \hline
+    \end{tabular}
+    \caption{Tabella degli storici transazioni}
+    \label{tab:transazioni}
+\end{table}
+\noindent
+\\[0ex]
+Si noti come tutti forniscano una profondità storica delle transazioni limitata e che mediamente non supera l’anno e mezzo: i database, ovviamente OLTP, a cui questo tipo di sistemi fanno riferimento forniscono unicamente una vista temporalmente ristretta della totalità delle transazioni effettuate sul proprio conto corrente. Questo non vuol dire che tutte le transazioni che superino queste soglie siano cancellate, anzi, verranno organizzate in particolari tipologie di archivi dati specializzate proprio nell’organizzazione e classificazione di grandi volumi di dati dove la profondità storica è un fattore rilevante: i database OLAP, che ci prestiamo ad introdurre. Proprio le differenti profondità temporali dei dati in questione rendono i database OLTP molto meno esigenti a livello di spazio d’archiviazione rispetto alla controparte OLAP.
+
+\subsection{Sistemi OLAP}
+OLAP - OnLine Analytical Processing è una particolare tipologia di database orientata all’esecuzione di complesse analisi di dati, finalizzate principalmente al supporto di decisioni strategiche aziendali: utile nel generare report su tendenze di vendite, andamento dei costi, analisi demografica dei clienti, misurazione del successo di campagne marketing…
+OLAP condivide i principi di “OnLine” e “Processing” di OLTP, che evitiamo di discutere nuovamente, non trattando più però di sistemi “Transactional”, bensì “Analitycal”: i sistemi OLAP sono “business oriented”, ovvero orientati al supporto di analisti, dirigenti, manager… che cercano di trarre informazioni significative dall’indagine su questi dati; proprio il concetto di “Analytical” rende abbastanza palese il collegamento tra quanto discusso nel capitolo sui database relazionali e le controparti OLAP: se si decidesse di adottare il modello relazionale, l’implementazione OLAP comporterebbe una logica colonnare proprio perché estremamente più competitivi degli OLTP nelle computazioni di dati; i DBMS OLAP riescono a garantire tempi di risposta molto migliori a query analitiche, ciò non vuol dire che non discuteremo di alcuni “meccanismi” che vengono utilizzati nella pratica per migliorare ulteriormente l’aspetto prestazionale. La differenza sostanziale tra OLAP e OLTP sta, quindi, nell’utilizzo prettamente pratico: i database OLTP sono orientati principalmente al supporto di tutti gli “operatori” sul campo, dipendenti di uffici, negozi al dettaglio, sistemi di prenotazione… tutti si interfacciano a questo tipo di sistemi perché l’interesse primario è archiviare i dati e non analizzarli, in maniera diametralmente opposta agli OLAP. Database come quest’ultimi sono molto poco soggetti a operazioni di modifica od eleminazione diretta, tanto che potremmo pensarli come “grandi contenitori” principalmente orientati a raccogliere dati di natura diversa, dove le uniche “transazioni di database” di rilevanza pratica sono gli inserimenti. Spesso quando si tratta di Business Intelligence e Data Management in contesi aziendali, come nel nostro caso quindi, si fa riferimento ai cosiddetti “Decision Support System (DSS)”: i  “Sistemi a Supporto delle Decisioni” sono strumenti informatici, prevalentemente software, atti a semplificare il carico di lavoro gravante su tutti i “decision maker”, fornendo un’interfaccia che permetta di assecondare le richieste dell’utilizzatore astraendo totalmente quello che succede a più basso livello, coordinandosi con i DBMS; non è obiettivo di questa tesi discutere l’architettura generale dei DSS, quanto invece sottolineare come la tipologia di database con cui lavorano è, proprio, OLAP. Discutere delle esigenze che hanno portato alla nascita dei sistemi OLAP risulta fondamentale per una comprensione approfondita di ciò di cui andremo a trattare: l’enorme accumulo di dati degli ultimi anni ha portato alla necessità di realizzare interrogazioni sempre più complesse ai database OLTP tramite query SQL comprensive spesso di molte funzioni di aggregazione ed istruzioni “JOIN”, secondo gli stessi meccanismi discussi col modello ER, che ne amplificano enormemente la complessità computazionale. Il bisogno alla base fu quello di costruire dei grandi archivi che potessero permettere non solo di raccogliere ingenti volumi di dati di varia natura, ovviando alle caratteristiche di “Volume” e “Varietà” dei Big Data, ma soprattutto capaci di organizzarli e strutturarli in modo tale da rendere efficiente la loro analisi e ridurre i tempi di risposta delle query che gli vengono rivolte, rimanendo coerenti al principio “OnLine”: lo schema a stella, la rappresentazione multidimensionale dei dati e il Data Warehousing costituiscono tre tra le principali rivoluzioni del Data Management moderno che ci proponiamo di raccontare. OLAP può essere inteso più come la filosofia con cui si trattano le query di business analytics rispetto al come vengano gestite all’effettivo, difatti tanto di questo dipende dalla particolare logica di gestione dei dati che si adotta e noi ci siamo, in un certo senso, vincolati al modello relazionale poiché, oltre ad essere semplice e quello ad oggi più utilizzato, utilizzeremo proprio il relazionale “Google BigQuery” nella parte progettuale conclusiva; le due declinazioni fondamentali di OLAP che hanno trovato, nella pratica, campo fertile sono ROLAP e MOLAP, quali andremo ad approfondire in dettaglio.
+\section{Data Warehousing}
+Per spiegare il concetto di “Data Warehouse (DW)” ci avvaliamo della definizione data da William H. Inmon, padre concettuale delle DW: 
+“Un Data Warehouse è una raccolta dati integrata, orientata al soggetto, variabile nel tempo e non volatile, di supporto ai processi decisionali”…
+Anche a costo di risultare banali, probabilmente non esiste altra maniera di comprendere al meglio le caratteristiche fondamentali di una DW; ciononostante questa descrizione, forse, non è sufficiente per cogliere il concetto alla base: una Data Warehouse non è nulla di così distante da un archivio dati tradizionale, difatti molte delle Warehouses utilizzate ad oggi si fondano, comunque, sul modello classico di database relazionale, concentrandosi sull’integrare dati da diverse fonti e organizzare la totalità dell’informazione in maniera ottimale; le Data Warehouse sono, infatti, database OLAP e continuano a valere tutte le proprietà precedentemente discusse. Un’aspetto di fondamentale importanza, che ci limitiamo solo ora a discutere, è l’analogo OLAP della “profondità storica” dei dati archiviati: se i sistemi OLTP gestiscono dati temporalmente limitati, gli OLAP, e le DW di conseguenza, organizzano l’informazione su orizzonti molto più ampi, rendendoli l’archivio dati principe delle business analytics, come avevamo già accennato d’altronde, permettendo di ottenere una visione completa e approfondita dell’evoluzione dei dati nel tempo, identificare trend e cambiamenti quali sono, spesso, tra le esigenze più comuni. Per capire il ‘come’ avvenga questo, immaginiamoci una Data Warehouse simile ad un archivio che si rinnova ciclicamente: i dati sono aggiornati ad intervalli regolari tramite la realizzazione di una sorta di “istantanea” dei dati operazionali a quello specifico momento e, organizzando le nuove informazioni con le preesistenti, si costruisce un database che cresce continuamente nel tempo. Così possiamo corroborare quanto detto precedentemente: il costante aggiornamento delle informazioni in una DW è esente da qualunque tipo di limitazione temporale, anzi, si predilige un’organizzazione efficiente dell’evoluzione storica dei dati piuttosto che concentrarsi solo su un orizzonte temporale limitato, per esempio quello delle transazioni più recenti; le esigenze progettuali, banalmente a livello di storage capacity, sono ben diverse nei DW e gli OLAP rispetto agli OLTP. Data Warehouse e database OLTP rispondono a query con ‘scope’ temporali molto differenti e ciò comporta, inevitabilmente, anche una differenza sostanziale nell’utilizzo prettamente pratico di questi: le DW sono database in sola lettura e le query a cui rispondono non comprendono inserimenti, eliminazioni o modifiche, bensì ottimizzano la visualizzazione di dati e l’efficienza di operazioni complesse; le informazioni vengono raccolte, come accennato nella sezione precedente, dai sistemi OLTP “sul campo” e da questi, ciclicamente, le DW prendono informazioni, ma non si contemplano operazioni di inserimento diretto, da intendersi come query SQL della famiglia “INSERT INTO…”
+\\[0ex]
+Una Data Warehouse è un archivio dove confluiscono tutti i dati operativi da ciascun database OLTP: a livello pratico per un impresa potrebbe rappresentare una sorta di “grande magazzino”, “warehouse” appunto, dove tutti i dati sensibili, come quelli di Marketing, Economici o quelli relativi alla privacy, sicurezza, soddisfazione del consumatore… siano facilmente reperibili, indipendentemente dalla profondità storica del dato.
+A questo punto, la definizione di Inmon risulta immediata:
+\begin{itemize}
+    \item Le DW sono “orientate ai soggetti di interesse” poiché si ruotano attorno ai concetti d’interesse dell’azienda: clienti, prodotti, vendite, dati finanziari, pubblicità… organizzandoli
+    \item La “variabilità nel tempo” è data dal rinnovamento ciclico delle informazioni nelle Data Warehouse
+    \item Le DW sono “non volatili” poiché archivi immutabili in sola lettura e non modificabili direttamente
+    \item Le DW sono "di supporto alle decisioni" per gli stessi motivi dei database OLAP
+\end{itemize}
+Si noti come OLAP e Data Warehouse siano stati spesso e volentieri discussi congiuntamente. La domanda che potrebbe sorgere al lettore è perché, allora, si faccia una distinzione tra questi due database se, alla fine, condividono moltissime proprietà e l’aspetto applicativo sembra essere lo stesso… Questa percezione deriva dal fatto che le Data Warehouse sono profondamente OLAP e ne condividono la totalità delle caratteristiche, tuttavia OLAP è più una filosofia, come già accennato precedentemente, che un’approccio effettivo alla progettazione di database: i Data Warehouse prendono tutti i principi OLAP e li mettono in pratica. Quello che davvero i Data Warehouse aggiungono agli OLAP è l’integrazione tra i dati, concetto fondamentale soprattutto in ambito enterprise: i database OLAP si concentrano sull’ottimizzare le performance analitiche sui dati che dispongono, i Data Warehouse garantiscono che quest’ultime siano effettuati sui dati più recenti, costantemente aggiornati e contenuti in un database capace di integrare ed unificare i dati provenienti sia da fonti interne che esterne all’impresa, costituendo un’ambiente centralizzato dove siano contenuti tutti i dati sensibili nel loro insieme e dove si eviti di far riferimento a database distinti. L’integrazione che portano le warehouse, appunto, risolve tutti quei problemi di comunicazione definiti come “data silos”: gestione dell’informazione organizzata in più database distinti e non in grado di comunicare tra loro, aspetto che rende difficile computare e visualizzare i dati nel loro insieme. I “silos” sono molto comuni nei contesti dove sono presenti forti strutture gerarchiche, cui le aziende sono esempio principe: ciascun dipartimento, filiale, sede… sono considerabili “silos” se non correttamente integrati tra loro; il cuore del discorso è proprio questo: il Data Warehousing non disicentiva l’utilizzo di database distinti per una corretta archiviazione di tutte i dati che vengono utilizzati e generati dai singoli dipartimenti, filiali, sedi… quanto sottolinea l’importanza che tutti questi comunichino tra loro passando attraverso un un unico grande tramite, che è proprio la warehouse essa stessa.
+\\[0ex]
+In un certo senso, le DW sono concettualmente molto simili ai vecchi “mainframe” e, come discuteremo successivamente, le architetture moderne potrebbero essere intese come modernizzazioni di quest’ultimi. Tutto ciò che abbiamo discusso non è, ovviamente, vincolato alle sole fonti interne all’azienda, anzi, le warehouse devono esser capaci di poter far confluire in sé dati anche da fonti esterne all’azienda, se quest’ultimo sono sensibili al business, per gli stessi concetti di integrazione precedentemente discussi. Leggendo un po’ tra le righe, è chiaro come i Data Warehouse si pongano l’obiettivo di risolvere tutti quei problemi che proprio i Big Data portano alle strutture di archiviazione dati tradizionali: potenti database progettati per lavorare con grandi volumi di dati e gestire l’alta velocità con cui vengono generati, integrando la varietà delle sorgenti in un unico ambiente. Quello su cui vogliamo concentrarci maggiormente è la “Varietà”: come abbiamo visto nel “Capitolo 1” quest’ultima non fa riferimento solo alla diversità tra le sorgenti, ma anche e soprattutto ai diversi “formati” che questi possono assumere, distinguendoli in dati strutturati e non strutturati; le Data Warehouse, dovendo fornire quest’ultime alte prestazioni computazionali e risposte in tempo reale, tollerano solamente dati strutturati nel formato con cui sono abituate a lavorare, ottimizzate quindi per una determinata e specifica logica di gestione di dati. Tuttavia, nei moderni contesti enterprise i dati non strutturati rivestono un’importanza sempre più cruciale e, a questo proposito, le architetture moderne di Data Warehousing si basano su concetti più “totalizzanti” rispetto a ciò che abbiamo finora discusso: sebbene gli unstructured data non siano di stretta rilevanza computazionale, far sì che le DW possano archiviarli e supportare sistemi che li gestiscano risolverebbe, analogamente, il concetto stesso di “Data Silos” anche per gli unstructured data; tutte le moderne implementazioni di Data Warehousing supportano, infatti, un particolare layer di storage che, come vedremo, non faccia alcuna distinzione sul particolare formato dei dati, sebbene computi solamente i relazionali. Un altro tra gli aspetti di più rilevante importanza di come i moderni Data Warehouse si discostino dal modello tradizionale, riguarda, proprio, le transazioni “ACID”: sebbene i DW non nascano per supportare operazioni di questo tipo, i concetti di “disaggregazione tra computazione e storage” portati dal “Cloud Computing” o, più generalmente, la grande capacità computazionale delle architetture moderne, permette di poter sostenere anche operazioni di questo tipo, rese terribilmente inefficienti in quanto, all’effettivo, l’obiettivo dei DW è diametralmente opposto: performare ottimamente su operazioni computazionali e non transazionali.
+
+\subsection{MOLAP}
+Come accennato precedentemente, il Data Warehousing si articola in due principali filosofie di gestione dati: ROLAP e MOLAP; in questa sezione ci proponiamo di approfondire quest’ultima, che sarà utile successivamente per parlare proprio di ROLAP. Multidimensional OLAP o, più semplicemente, MOLAP è un particolare modello basato sull’utilizzo di strutture multidimensionali per la gestione di dati, abbandonando quindi la logica relazionale. MOLAP si basa su tre concetti fondamentali:
+\begin{itemize}
+    \item Fatto: evento misurabile e soggetto principale dell’analisi che si vuole effettuare, coerente al particolare contesto in cui si colloca la DW
+    \item Misura: determinata proprietà caratterizzante il Fatto e di interesse all’analisi, tipicamente “atomica”, non ulteriormente scomponibile
+    \item Dimensione: particolare orizzonte lungo il quale si vuole effettuare l’analisi in questione
+\end{itemize}
+Quest’ultimi non risultano così eccessivamente differenti dai concetti di entità ed attributo del modello relazionale: in un certo senso, potremmo intendere un fatto come un’entità che si vuole analizzare, le misure come i suoi attributi e la dimensione come un particolare attributo che “sviluppa” tutte le misure lungo una certa prospettiva. Anche qui, a costo di risultare banali sfrutteremo uno degli esempi più utilizzati e potenti in letteratura: le “vendite” di un generico prodotto. Volessimo organizzare quest’ultime multidimensionalmente, potremmo considerare:
+\begin{itemize}
+    \item Il “Fatto” come la “Vendita” stessa, essendo questa il soggetto dell’analisi
+    \item “Quantità” e “Incassi” come misure caratterizzanti l’analisi di vendite nella stragrande maggioranza dei casi
+    \item “Tempo”, “Prodotto” e “Negozio” come dimensioni, essendo tutti questi attributi che contestualizzano e specificano l’analisi delle vendite sotto una particolare prospettiva
+\end{itemize}
+Avendo scelto $3$ dimensioni nel nostro esempio, possiamo pensare ad una modellazione multidimensionale come quella in "Figura 2.5":
+%Img Cap 2.9
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.35]{img/CuboMOLAP.png}
+    \caption{Cubo MOLAP - Vendita}
+\end{figure}
+\\[0ex]
+Proprio il concetto stesso di dimensione ha dato vita al modello cubico dove, ovviamente, non si è vincolati ad un massimo di $3$ dimensioni, anzi, idealmente si potrebbe far riferimento a modelli n - dimensionali o, più propriamente, ipercubici; si noti come questo tipo di rappresentazione sia tanto di facile comprensione quanto quella relazionale, rappresentandone una valida alternativa sotto certe condizioni. 
+Se il modello relazionale lavora per “tuple”, il modello multidimensionale memorizza i dati in “celle”: qui facciamo della figura 2.5 virtù, nel senso che per “cella” si intende proprio ogni singolo cubo che costituisce la struttura nel suo insieme e che, al suo interno, conterrà i dati all’effettivo. Sebbene possa non sembrare proprio una definizione rigorosa, rende ottimamente l’idea. Proprio le “celle” ci permettono di rimarcare un concetto fondamentale: i modelli multidimensionali, come quelli relazionali, sfruttano ipercubi e tabelle puramente come logica di visualizzazione/rappresentazione e, a livello fisico, ovviamente non dobbiamo pensare che la memorizzazione dei dati avvenga in questa maniera; nel modello multidimensionale si parla di “celle” proprio perché l’implementazione più diffusa comporta l’utilizzo di array bidimensionali, cui in letteratura difatti ci si riferisce spesso a “celle di array”. Continuando con quest’approccio di analogia al modello relazionale, le “tuple” definiscono determinate configurazioni dell’entità rappresentata: una determinata vendita di un certo prodotto, in un certo negozio, in una specifica data, con uno specifico incasso, in una particolare quantità… se si pensasse “relazionalmente”, le tabelle rappresenterebbero tutte le differenti transazioni effettuate per la vendita di un certo prodotto e le tuple, quindi, sarebbero molto vicine concettualmente alle singole voci di uno “scontrino”; con il modello relazionale, le tuple coincidono spesso e volentieri con eventi reali e del contesto strettamente applicativo del problema. Quest’aspetto non è, invece, garantito nel mondo multidimensionale: i dati contenuti all’interno di ogni “cella” sono pre - aggregati, ovvero si passa per un iniziale stato di pre - processamento dove vengono effettuate varie aggregazioni sulle Misure a seconda del caso, principalmente somme, aspetto che già ci fa intuire come un Fatto non coincida tassativamente con un evento reale, difatti le singole “celle” rappresentano quantità ed incasso complessivi di un certo prodotto, venduto ad una determinata data, in uno specifico negozio, risultato dell’aggregazione di tutte le vendite singolarmente organizzate nel modello relazionale. In figura 2.5 le singole celle rappresentano le vendite giornaliere complessive di un negozio divise per prodotto, si noti come alcune “celle” risultino mancanti poiché, chiaramente, non si vendono tutti i prodotti tutti i giorni in tutti i negozi… In questo particolare esempio si è organizzata la dimensione Tempo per “Giorno”: ovviamente, essendo i modelli MOLAP sempre orientati al semplificare la visualizzazione e l’analisi di dati, in questo modo non solo l’informazione, ma anche la struttura stessa di cubo risulta poco chiara e di difficile interpertazione, indipendentemente dalle aggregazioni effettuate per ogni cella. Per ovviare a questo problema, i linguaggi di interrogazione per questa logica di gestione dati, tra cui MultiDimensional eXpressions - MDX ad esempio, forniscono una serie di operazioni che si basano sul concetto di “livello di aggregazione” delle dimensioni: ciascuna di queste è organizzata in diversi livelli di “granularità”, raggiungibili a seconda delle particolari aggregazioni tra celle che è possibile effettuare; infatti sommando le vendite giornaliere di un certo prodotto per ogni giorno dell’anno otterremo, ovviamente, le vendite annuali per tale negozio… e questo è, in soldoni, il meccanismo di pre - processamento con cui vengono inizialmente creati gli ipercubi. Una possibile organizzazione dei livelli potrebbe essere come quella in "Figura 2.6":
+%Img Cap 2.9
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{img/GranularitàDimensione.png}
+    \caption{Cubo MOLAP - Vendita}
+\end{figure}
+\noindent
+\\[0ex]
+L’aggregazione da Livello $1$ a Livello $n$ è bidirezionale: posso decidere sia di aumentare il livello di dettaglio, scendendo nella gerarchia dei livelli, come di diminuirlo, risalendo; ovviamente i Livelli $1$ dipendono da come i dati vengono raccolti dai database operazionali sul campo, ovvero: se venisse registrato il mese e non il giorno di una singola vendita non posso sperare di scendere ulterioremente nella gerarchia dei livelli e risalire proprio al giorno della singola vendita, poiché non direttamente disponibile. 
+Le operazioni che, finora, ci siamo limitati unicamente a sottointendere si definiscono “roll - up” e “drill - down”: entrambe cambiano la granularità delle dimensioni di riferimento, riorganizzando il cubo a seconda del particolare livello di dettaglio; a queste si aggiungono le operazioni di “slice and dice” che, sostanzialmente, consistono in analoghi del SELECT SQL, costituendo un parco di operazioni fondamentali alla base di qualunque gestione multidimensionale dei dati.
+Sebbene risulti chiaro come uno dei principali vantaggi dell’approccio MOLAP sia una maggiore efficienza e flessibilità nella gestione delle query analitiche, proprio la pre - aggregazione si dimostra, in questo senso, un’arma a doppio taglio: MOLAP è una filosofia che non permette di performare ottimamente per grandi volumi di dati poiché quest’ultimi vengono, proprio, pre - aggregati. Il modello MOLAP tradizionale proponeva che tutte le aggregazioni, per ogni possibile combinazione di dimensioni e livelli di granularità, venissero effettuate nella fase iniziale di creazione del cubo, indipendentemente da quali fossero, poi, le query a cui dovrebbe rispondere: questo approccio, “brute - force” che si voglia, permette di ottimizzare l’aspetto prestazionale di questi database, minimizzando i tempi di risposta, risultando, però, insostenibile non solo a livello computazionale, ma anche di storage capacity per grandi volumi di dati; si pensi, ad esempio, al concetto di “celle mancanti” in figura 2.5, per l’implementazione di acesso posizionale tramite array ai dati una “cella mancante” impone che, comunque, si sia allocata memoria per tale posizione anche se, all’effettivo, non si utilizza…
+MOLAP fu, infatti, una piccola rivoluzione nei primi anni 2000 e l’avvento dei Big Data non ha sicuramente contribuito alla sua estensione, anzi, il futuro di MOLAP, nonostante tutto il lavoro effettuato su soluzioni di aggregazioni parziali, risiede in soluzioni ibride con il modello ROLAP, cosiddetti sistemi “HOLAP - Hybrid OLAP”, che non tratteremo poiché poco pertinenti ai discorsi a venire. Proprio il modello ROLAP si dimostra, ad oggi, di più largo utilizzo poiché, sebbene sia meno efficiente, riesce a garantire prestazioni ottimali a parità di risorse di calcolo per dataset molto molto più estesi
+\newpage
+\subsection{ROLAP}
+Come ampiamente trattato nella sezione precedente, il modello MOLAP spicca come una soluzione progettuale “ad hoc” per l’organizzazione di dati in un DW: quando l’analisi dei dati ha l’esigenza di concentrarsi su determinati orizzonti, come quello temporale ad esempio, fa di questa necessità il cuore concettuale del modello, dimostrandosi efficiente nelle computazioni su volumi di dati contenuti. L’idea di estendere la possibilità di effettuare analisi su determinate dimensioni anche al modello relazionale viene sostanzialmente, oltre che dalla grande diffusione di questo modello, da tutto il lavoro che è stato svolto sui database relazionali e l’esperienza che si ha nel lavorare con quest’ultimi, soprattutto nei contesti enterprise. Non essendo i concetti di “Misura”, “Dimensione” e “Fatto” nativi del modello relazionale, si cerca di trasportarli analogamente a quanto detto nella sezione precedente: i fatti possono essere rappresentati tramite singole tabelle (relazioni), le misure come attributi di queste e per le dimensioni si sceglie, nonostante anche qui si sia concettualmente molto vicini agli attributi, di organizzarle in tabelle distinte e direttamente collegate al fatto in questione. Tutte le considerazioni che si fanno in ROLAP sono orientate a risolvere il principale problema che il modello relazionale tradizionale avrebbe se fosse “dato in pasto” ad un contesto soggetto alla complessità dei Big Data, come quello enterprise ad esempio: Data Warehousing vuol dire, nell’accezione più generale del nostro caso di studio, implementare database che computino efficientemente grandi volumi di dati, per cui il problema principale dei relazionali che lavorano su dataset estesi è dato dalla complessità delle numerose istruzioni di JOIN quali i DBMS si troverebbero a dover gestire; indipendentemente da tutte le tecniche, cosiddette di “indexing”, che si possono adottare per diminuire la complessità computazionale delle istruzioni di JOIN, i volumi spropositati dei Big Data fanno sì che, mediamente, la complessità di quest’ultima sia quantomeno proporzionale agli elementi delle tabelle attori del JOIN stesso. Essendo che, ovviamente, non possiamo in alcun modo diminuire le dimensioni dei dataset, quello che progettualmente si incentiva è diminuire il più possibile il numero di JOIN e, per far questo, le parole chiave del modello ROLAP sono proprio “denormalizzazione” e “ridondanza”.
+%img Cap.2.18
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/StarSchema.png}
+    \caption{"Vendite" in modello ROLAP}
+\end{figure}
+\\[0ex]
+L’estensione di figura 2.18 ROLAP dell’esempio che abbiamo utilizzato nella discussione MOLAP mette in luce proprio quanto precedentemente discusso:
+\begin{itemize}
+    \item Le “Dimensioni” sono rappresentate tramite opportune tabelle, cosiddette “dimension table”, dove i livelli di aggregazione sono organizzati come attributi della relazione stessa
+    \item Il “Fatto” da analizzare è rappresentato tramite un’opportuna “Tabella “Vendite”, o “fact table”, la cui chiave è data dall’insieme delle chiavi di ciascuna dimension table, aspetto che rende possibile interfacciarsi direttamente a quest’ultime tramite la specifica chiave
+    \item Le “Misure” sono attributi diretti della fact table
+\end{itemize}
+La struttura denormalizzata delle dimension table risulta abbastanza palese, in quanto i livelli di aggregazione presentano tra loro, per definizione stessa di “granularità”, dipendenze funzionali; “Nazione” dipende funzionalmente da “Filiale” e “Filiale” dipende funzionalmente da “Negozio”, questo tipo di dipendenze vengono anche dette “transitive”. 
+A differenza delle dimension table, la fact table è, per costruzione, in forma normale di Boyce e Codd: rappresentando quest’ultima il fatto stesso, ovvero le singole vendite di prodotti, la BCNF è fondamentale al garantire il vincolo di unicità delle tuple ed evitare anomalie di inserimento che, all’effettivo, sono le uniche anomalie in questo contesto; non dimentichiamoci, infatti, che stiamo studiando un modello di Data Warehouse: modifiche ed eliminazioni sono molto rare, gli inserimenti invece sono ciclici. In un certo senso, BCNF è un controllo ulteriore agli inserimenti che si fanno nella fact table, essendo che molto dell’integrità dei dati è garantita a priori dalla fase di “Transform” di ETL/ELT, che discuteremo successivamente.
+Come già discusso nella sezione MOLAP, una delle differenze più sostanziali tra questi due modelli è proprio “cosa” venga rappresentato: il modello MOLAP non rappresenta “eventi reali” come fa invece il modello relazionale, difatti nella fact table ROLAP si terranno conto di tutte le vendite singolarmente, mentre nel modello MOLAP si tiene conto delle vendite complessive di un dato prodotto per particolari configurazioni delle dimensioni rimanenti; proprio in questo senso il modello ROLAP non pre - aggrega i dati come MOLAP, ovviando al vincolo di dataset ridotti, ma risponde alle query computazionali effettuando direttamente le operazioni opportune sui dati. Il modello in figura 2.18 viene normalmente definito come “Star Schema”, in quanto ricorda proprio la struttura di una “stella” con la fact table centrale. Lo “Star Schema” permette di ridurre sostanzialmente il numero di JOIN necessari alle computazioni, si pensi al come tutte le dimension table siano “ad un solo passo”, un solo JOIN per intenderci, di distanza dalla tabella dei fatti soggetto delle computazioni. Adottando altri accorgimenti progettuali, come una filosofia colonnare ad esempio, il modello ROLAP costituisce una delle soluzioni, ad oggi, più efficienti per la gestione di grandi volumi di dati e, come suddetto, particolarmente apprezzata nel contesto enterprise, in quanto evoluzione dei già adottati modelli relazionali. 
+\noindent
+\\[1ex]
+In questo capitolo abbiamo discusso dell’importanza rivestita dai database relazionali nel Data Management moderno, introducendo il concetto di Data Warehousing, e della forte necessità, duplice gli ingenti volumi Big Data, di efficientare le computazioni aggregative utili all’analisi dimensionale, adottando logiche denormalizzate e memory management colonnare, discutendo delle limitazioni di altri approcci, altrettanto validi, come quello MOLAP e di come, comunque, si decida di non abbandonare il retaggio relazionale, estendendolo a veri e propri standard che adottino i suddetti meccanismi, come il modello ROLAP e il suo “Star Schema”. Nel prossimo capitolo introdurremmo, oltre che il concetto di Cloud Computing, il motore principe del nostro caso di studio: “Google BigQuery”, quale ci permetterà di esplorare i “Data LakeHouse”, una delle soluzioni più recenti nell’ambito del Big Data Management e di come, proprio, le tecnologie Cloud permettano di risolvere tutte le cricità di “obsolescenza” dei database già discusse nel “Capitolo 1”, mettendo in pratica, d’altronde, tutti i concetti implementativi descritti finora.
+
+%Capitolo 3
+\chapter{Cloud Computing \& Cloud Datawarehouses}
+\thispagestyle{empty} %Rimuovi numerazione a piè nella pagina introduttiva
+\fancyhead{} %Svuoto header
+\fancyhead[L]{CAPITOLO 3. Cloud Computing} %Reimposto
+\fancyhead[R]{\thepage} %Reimposto pagina
+Il “Cloud Computing” è uno degli approcci più moderni alla risoluzione di tutti quei problemi di digitalizzazione e implementazione di sistemi informatici ai contesti enterprise. Il Cloud costituisce uno dei motori principali al dinamismo con cui, negli ultimi anni, si è evoluto il settore IT, tanto che è stato eletto come una delle “tecnologie abilitanti” dell’Industria 4.0. 
+\\[0ex]
+A mio avviso, molto del concetto stesso di “Cloud Computing” è stato trattato nel “Capitolo 1 - La Rivoluzione Big Data”: in settori come quello del “Data Management” si è arrivati alla situazione, quasi paradossale, dove non esistano più validi motivi per fare a meno di tecnologie Cloud based, elevando quest’ultimo alla stregua di uno standard su cui si fondano tutti i sistemi informatici moderni. La vastità delle possibilità che offre il “Cloud Computing” rende parecchio difficile fornirne una definizione rigorosa, sebbene in letteratura si utilizzi definirlo come: un particolare “modello di erogazione di servizi informatici”, principalmente orientato al fornirne soluzioni flessibili e “su misura” alle richieste del consumatore. I principali servizi forniti da tecnologie Cloud vanno dallo storage alla potenza di calcolo, dai database a infrastrutture di rete… La grande rivoluzione del Cloud è, proprio, poter permettere l’accesso ad un portafoglio pressoché illimitato di servizi informatici sfruttando un modello di consumo “pay as you go”, dove al cliente viene addebitato un costo che è direttamente proporzionale all’utilizzo effettuato delle risorse Cloud stesse, liberandolo dalla necessità di acquistare e gestire in proprio costose infrastrutture hardware e software, definite comunemente “On Premise”. Il concetto di fondamentale importanza quando si tratta di “Cloud” è, infatti, quello di “scalabilità”: quando il cliente acquista un servizio, può deciderne i parametri fondamentali e le specifiche, adattandolo alla propria domanda; l’esempio più semplice possibile è quello dei servizi di “Cloud Storage”: provider come iCloud, Google Drive, AWS… permettono tutti di acquistare una repository online, di capacità concordata, dov’è possibile archiviare i propri file, documenti, foto… e, se necessario, la capacità della repository è estendibile acquistando un piano diverso. La scalabilità delle risorse Cloud permette di costruire soluzioni che siano durature nel tempo e non eccessivamente sensibili al dinamismo del mercato IT: nel Data Management, si sfrutta la scalabilità del Cloud per implementare Data Warehouse che possano adattarsi alle caratteristiche di “Variabilità” e “Volume” dei Big Data, aggiustando dinamicamente le capacità di archiviazione e calcolo per garantire prestazioni efficienti.
+L’architettura generalissima di un’architettura di “Cloud Computing” è schematizzata in figura $3.1$:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/ArchitetturaCloudSchema.png}
+    \caption{Schema Generale Architettura Cloud}
+\end{figure}
+\\[0ex]
+L'infrastruttura fisica del provider viene virtualizzata in uno o più server, allocando tutte le risorse di memoria e calcolo concordate con il cliente e fornendo le relative interfacce utente/API per l’utilizzo e l’amministrazione. Nella prossima sezione, approfondiremo i tre principali modelli di servizio Cloud: Infrastructure as a Service (IaaS), Software as a Service (SaaS) e Platform as a Service (PaaS), discutendo di caratteristiche e casi d’uso di ciascuna.
+\section{Modelli di Servizio Cloud}
+I modelli “IaaS”, “SaaS” e “Paas” costituiscono differenti modalità di erogazione di servizi Cloud a seconda delle richieste del consumatore; la differenza sostanziale tra i tre, da cui dipendono i differenti casi d’uso, coincide con il particolare “livello di responsabilità” del Cloud provider. “IaaS”, acronimo di “Infrastructure as a Service”, è il modello più semplice e tradizionale di servizio Cloud, qui il provider assume solo le responsabilità di gestione dell’infrastruttura, il livello più bassp, mettendo a disposizione del cliente core, RAM, storage, CPU… tutte le risorse di memoria e calcolo precedentemente discusse. In “IaaS” il provider deve garantire che l’infrastruttura fornita funzioni correttamente a livello hardware e non ha alcun ruolo in quello che sarà il successivo utilizzo da parte del cliente che, comunque, è responsabile della configurazione, nonché la manutenzione, di tutti gli strumenti e le applicazioni che decida di implementarvi; questo modello di servizio è principalmente adottato quando interessa implementare applicativi “ex novo” sfruttando la scalabilità della risorse che offre l’Infrastructure as a Service
+\\[0ex]
+All'estremo opposto del modello “IaaS” troviamo il modello “SaaS”, o “Software as a Service”, dove il Cloud provider ha il maggior livello di responsabilità, fornendo applicazioni completamente sviluppate, a cui gli utenti possono accedere tramite Internet, ed eseguite direttamente sulle infrastrutture dei provider. In questo modello gli utenti possono solo utilizzare funzionalità implementate dal provider e, nonostante sia uno dei servizi Cloud più elargiti, ai fini di ciò che tratteremo non sarà così rilevante.
+\\[0ex]
+A cavallo tra “IaaS” e “SaaS” troviamo il modello “PaaS”, dove si offrono agli utenti determinate piattaforme software e tool sviluppati direttamente dal provider; quest’ultimo sarà tenuto, quindi, a garantire non solo che l’architettura hardware funzioni correttamente, ma anche che le piattaforme software fornite facciano lo stesso, occupandosi della manutenzione. La differenza sostanziale con “SaaS” risiede nel che, comunque, “PaaS” fornisce una piattaforma orientata all’implementazione di un determinato servizio che si struttura sul software e sugli strumenti garantiti dal provider, “SaaS” è, d’altro canto, puramente orientata all’utilizzo e non allo sviluppo di applicazioni; differisce da “IaaS”, invece, in quanto le piattaforme e gli strumenti di sviluppo non sono direttamente implementati dal consumatore, ma forniti, appunto, dal provider stesso. Il motore principe di questa tesi, Google BigQuery, è un database Cloud based appartenente alla categoria “PaaS” di modelli di servizio: lavorare con BigQuery vuol dire non prestare attenzione all’architettura che è alla base del database, garantita e gestita da Google, concentrandosi unicamente sul suo utilizzo prettamente applicativo all’interno di processi di ELT ed ETL, o come Data Warehouse in contesti enterprise
+\section{Infrastructure as Code: Terraform}
+Come già discusso nelle sezioni precedenti, l’implementazione di Data Warehouse su Cloud è una delle soluzioni, ad oggi, di più largo utilizzo. Tutte le tecnologie ed i prodotti Cloud based vengono gestiti, nella pratica, tramite particolari software comunemente definiti come “Infrastructure as Code” o, più semplicemente, “IaC”. Un IaC è un approccio alla gestione, creazione, configurazione e manutenzione di infrastutture informatiche basato interamente su codice: il vantaggio intrinseco di questo metodo è fornire agli sviluppatori la possibilità di definire concretamente tutte le risorse dell’infrastruttura tramite codice, evitando tutti quei processi manuali che, oltre ad essere tipicamente dispendiosi, sono spesso soggetti ad errori. “Terraform” è uno dei tool IaC più utilizzati nella pratica, permette all’utente di gestire sia risorse Cloud che On - Premise, proprietarie per intenderci, tramite opportuni file di configurazione scritti in “HashiCorp Configuration Language - HCL”, sviluppato dall’omonima azienda che detiene la proprietà intellettuale di Terraform. HCL è un linguaggio dichiarativo, particolarmente calzante a quanto abbiamo discusso, in quanto, come da fondamenta di tutti i linguaggi dichiarativi, permette di definire lo “stato desiderato”, ovvero cosa si vorrebbe idealmente raggiungere, senza specificare direttamente tutte le operazioni intermedie al raggiungimento, come farebbe, d’altra parte, un linguaggio imperativo. HCL permette all’utente di limitarsi unicamente a definire tutti i parametri sensibili di una risorsa per configurarla all’effettivo, sfruttando la struttura fondamentale di “blocco”,  inteso come un insieme di assegnazioni atte alla particolare configurazione di una certa “risorsa”, che, tipicamente, comprende più attributi da specificare. Il workflow generalissimo di Terraform può essere facilmente sintetizzato in tre fasi: scrittura, pianificazione e applicazione. La fase di scrittura è quella dove, all’effettivo, si sviluppa il codice che andrà a definire le risorse, organizzandolo in file HCL, comprensivi della particolare estensione “.tf”, a cui si farà accesso in lettura durante la successiva fase di pianificazione. Quest’ultima si preoccupa di organizzare in una sorta di “lista” tutte le azioni definite in ciascuno dei file .tf definiti nella fase di scrittura, creando un cosiddetto “piano di esecuzione” comprendete tutte le azioni di creazione, aggiornamento ed eliminazione necessarie a far sì che l'infrastruttura di destinazione corrisponda a quanto dichiarato nel codice di configurazione; questa fase risponde all’istruzione “terraform plan”, impartito tramite, tipicamente, linea di comando. L’applicazione coincide, formalmente, nell’esecuzione di ciascuna delle azioni definite nel piano di esecuzione, anche qui tramite il particolare comando “terraform apply”. Ciò che risulta veramente interessante discutere della fase di applicazione è il “come” Terraform possa accedere alla piattaforma del provider Cloud ed effettuare le suddette azioni: tipicamente, indipendentemente che il provider sia Google, Amazon, Microsoft… tutte le informazioni sensibili della propria infrastruttura Cloud, come le chiavi e token di accesso, sono contenuti in un particolare file di configurazione, tipicamente JSON, che è direttamente reperibile dalla piattaforma stessa. La fase di scrittura impone, quindi, che tutte le risorse vengano definite a valle di un particolare “Blocco Provider” che dichiara, appunto, quale sia l’esercente del servizio Cloud e permette a Terraform di collegarvisi in fase di applicazione; il “Blocco Provider” implementa, sostanzialmente, tutte le operazioni di collegamento con l’API dell’esercente.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/TerraformPicProvider.png}
+    \caption{Schema Generale Architettura Cloud}
+\end{figure}
+
+\noindent
+Nelle applicazioni di Data Management, Terraform riveste un ruolo di particolare importanza, in quanto risulti possibile creare, modificare ed eliminare istanze di database SQL, tra cui dataset o tabelle in motori come BigQuery, permettendo, all’effettivo, di gestire un Data Warehouse Cloud based.
+\section{Cloud Data Warehouses}
+Nel capitolo 2 abbiamo spiegato concettualmente che cos’è un datawarehouse e come si discosta concettualmente e fisicamente dai RDBMS transazionali OLTP; abbiamo visto come la diversa architettura fisica ne comporta efficientamenti per query analitiche e come ottimizzare la progettazione concettuale per progettare schema ottimizzati per use case analitici.
+
+\noindent
+In questo e nei successivi paragrafi discuteremo di come i data warehouse tradizionali si evolgono per gestire i big data, analizzando il caso d'uso di BigQuery, il Cloud Datawarehouse nativo di Google. BigQuery è frutto di ricerca decennale di Google nell'ambito di sistemi distribuiti, di cui l'azienda di Mountain View è pioniere.
+
+\subsection{Cloud Data Warehouses}
+
+In un datawarehouse tradizionale le risorse computazionali e di storage sono tipicamente  limitate e costose. Da ciò ne deriva una particolare attenzione applicativa nell’eliminazione di ridondanza e tabelle temporanee create durante le elaborazioni, oltre all’inpossibilità di gestire tabelle molto grandi e join complessi.
+
+\noindent
+Le esigenze analitiche nell’era dei BigData domandano soluzioni più efficienti, scalabili ed elastiche nell’utilizzo delle risorse.
+Efficienti perchè le risorse computazionali devono venire utilizzate al meglio e allocate solamente se servono alla computazione.
+Scalabile ed elastiche perchè per processare petabyte di dati e flussi di lavoro più grandi basta mettere a disposizione della computazione più macchine, in maniera automatica.
+
+
+\noindent
+I moderni cloud data warehouse come BigQuery, Redshift, Snowflake non fanno tradeoff di funzionalità rispetto ai sistemi on-premise ma anzi sono semplicemente la loro estensione naturale che ne permette la scabilità computazionale orizzontale necessaria al processamento di query analitiche molto complesse. Usare ingenti risorse computazionali ma per il tempo necessario ai processi analitici ne limita enormemente i costi rispetto a comprare risorse computazionali per gestire il picco delle attività.
+
+\noindent
+Generalizzando l’architettura notiamo una caratteristica comune. La disaggregazione tra compute e storage, dove la componente computazionale è rilasciata su cluster di vm di un cloud provider e la componente di storage in un data lake o file system distribuito, sempre di un cloud provider (i.e AWS S3, GCS, Hadoop). 
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/cap3-1.png}
+    \caption{Snowflake Data Warehouse Architecture}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{img/cap3-2.png}
+    \caption{Modern Redshift Data Warehouse Architecture}
+\end{figure}
+
+
+I data lake sono delle enormi repository, spesso su infrastruttura distribuita capaci di organizzare e salvare ingenti quantità di dati.
+L’infrastruttura e le innovazioni che ne hanno favorito la creazione sono i file system distribuiti, per esempio GFS (Google File System) e HDFS (Hadoop Distributed File System) e i cloud storage come GCS (Google Cloud Storage), Aws S3 (Simple Storage Service) e Azure Blob Storage. 
+
+\noindent
+La praticità di questi strumenti sta nella loro scalabilità orizzontale e nel loro bassissimo costo, soprattutto i servizi di cloud storage. GCS ad oggi (2024) ha tariffe sui 2centesimi al mese per GB, inoltre se i dati non sono frequentamente acceduti è possibile spostarli in una categoria di storage a costo ancora più basso usando, in esempio, GCS archive storage o AWS Glacier.
+
+\noindent
+Queste proprietà rendono i data lake appetibili come staging area per qualsiasi tipo di ETL e come metodo di archiviazione per qualsiasi tipo di dato, compresi quelli non strutturati: immagini, video, audio: di qui il nome blob storage del prodotto azure (binary large object).
+
+\noindent
+Questo tipo di architettura centralizza la gestione del dato e ne favorisce l’interscambio all’interno dell’organizzazione, qualità indispensabile nell’era dell’intelligenza artificiale dove large language model multimodali vengono allenati usando dati non strutturati raccolti da Internet.
+
+\noindent
+I cloud provider forniscono però API piuttosto limitate per interagire con i data lake (i.e get, put, list), non offrono servizi di data quality e in generale non hanno le componenti computazionali  e i le facilities tipiche dei data warehouse: transazioni ACID e una capace gestione dei metadati. Se non gestito in maniera appropriata i data lake diventano dei cosi detti “data swamp”, in cui non si riesce a controllare il tipo di dato che entra nel data lake e quando si scoprono i problemi da loro causati su sistemi a valle (pipeline di ML o Analitiche) è già troppo tardi.
+
+\noindent
+Questi problemi portano alla necessità di processi di ETL/ELT separati per trasferire i dati e pulirli sui cloud data warehouse: questo aumenta i costi (implementazione, gestione e manutezione di altro ETL), complessità e provoca obsolescenza dei dati, soprattutto i dati aggiornati ad alta frequenza come in esempio le code streaming kafka.
+
+\noindent
+L’ideale, come osserviamo in Figura sarebbe rimuovere questo ulteriore layer di ETL ed usare direttamente il Data Lake come sorgente di dato per operazione sul DataWarehouse o sulle pipeline di machine learning.
+%img Cap.2.19
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/Cap2.19.png}
+    \caption{Legame Lake - Warehouse}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/cap3-3.png}
+    \caption{Evoluzione componente di storage di un Cloud DataWarehouse}
+\end{figure}
+
+\noindent
+Come osservato nell’architettura di Snowflake il pattern principale degli ultimi anni in ambito data warehouse e’ stato quello di disaggregare componente computazionale e di storage dei , usando per la componente di storage i data lake, mitigandone le limitazioni e rendendoli dei “general purpose storage engine”.
+
+\noindent
+Nei moderni cloud datawarehouses questo avviene ma mantenendo un layer di metadati esterno allo storage, come per esempio in Snowflake la componente “Cloud services” o in Redshift “Redshift Managed Storage”. In realta’ e’ possibile utilizzare lo stesso data lake, se ha primitive che lo permettono, per gestire il layer di metadati.
+
+% Questi grafici possono essere ancora utili
+%img Cap.2.20
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/Cap2.20.png}
+    \caption{Collocazione LakeHouse}
+\end{figure}
+\subsection{Data Lakehouses e Delta Lake}
+
+Un caso d’uso molto interessante è stato sviluppato da DataBricks e reso open source nel 2019, si tratta di delta lake, un formato colonnare con cui è possibile costruire operazioni ACID senza un layer di metadati esterno al data lake. 
+
+\noindent
+Adottare questo formato significa superare le limitazioni analizzate nel paragrafo precedente sui data lake e costruire anche dei data warehouse custom al di sopra di questo formato.
+
+\noindent
+Con Delta Lake è possibile sviluppare in un data lake operazioni di Time travel, proprità quasi emergente del meccanismo di isolamento Snapshot Isolation (SI) che il formato implementa. Caching e operazioni di upsert sul dato, a causa dell’utilizzo di file non mutabili (mutazione che sarebbe peraltro molto costosa da usare in un data lake). 
+
+\noindent
+Un’altra caratteristica importante è lo schema-on-read, tipica del formato colonnare su cui implementa il data lakehouse (apache parquet), in cui lo schema è parte integrante del dato, compreso il datatype. Utile per evitare divergenze tra quello che il dato contiene, e il metadato memorizzato sul warehouse (spesso sorgente di errori).
+
+\noindent
+Delta lake supporta queste proprietà grazie a file di log e metadati disponibili direttamente sul data lake che utilizzano formati standard come json e parquet per memorizzare logs e checkpoints. 
+In Figure 1 vediamo un esempio di struttura di una tabella deltaLake presa da (indicare qui paper):
+In particolare vediamo come i dati siano memorizzati in parquet ed abbiano un nome generato da UUID che ne garantisce all’interno della propria partizione l’univocita’. 
+L’aspetto piu’ interessante di questo design sono i file di log sotto il percorso mytable deltalog.
+Ogni object store implementa tra le proprie operazioni una primitiva di creazione sequenziale univoca del file. I file sono salvati in formato json con numero progressivo e al loro interno sono memorizzati le progressive operazioni applicabili sulla tabella: 
+cambio di metadati, aggiunta o rimozione di file (le delete sono implementate quindi come operazioni di tipo delete, in generale gli update sui data lake sono sempre evitati per ragioni di performance e semantica incoerente. 
+
+\noindent
+Per evitare che i file di log crescano a dismisura, e per evitare di ripercorrere potenzialmente tutti i log in lettura si implementa un meccanismo di checkpoint che codifica in un file parquet tutte le operazioni che lo precedono, sostituendolo ai json e rendendo la lettura da parte delle librerie cliente e connettori piu’ peformante.
+
+\noindent
+Delta lake implementa proprieta’ transazionali tramite Snapshot Isolation sulle operazioni in lettura in modo che i client vedano un consistente stato della tabella nel momento in cui fanno una chiamata di lettura (facendo checks che transazioni in corso in success o fallite) non influiscano la lettura (grazie all’immutabilita’ delle tabelle).
+
+\noindent
+Non andremo nel dettaglio ma le transazioni in scrittura sono implementati tramite meccanismi di append atomico (supportate per esempio da Google Cluod storage e GCS) sui logs e retry intelligenti in caso di operazioni concorrenti.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{img/Cap3-4.png}
+    \caption{Collocazione LakeHouse}
+\end{figure}
+
+Per completare l’introduzione a delta lake proproniamo nell’immagine il benchmark di Databricks su TPC-DS (uno dei benchmark standard usati per misurare le performance dei sistemi software su query analitiche). 
+L’analisi dipende certamente da diversi fattori ma sicuramente usando, come e’ stato fatto, un layer di caching sopra al data lake e dati ausiliari tra i metadati della tabella (i.e aggregazioni precompatute) si ottengono risultati molto vicini allo stato dell’arte, evidenziando i pregi sia di praticita’, che di potenzialita’ di una tecnologia che ha ancora margini di potenziamento importante.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{img/Cap2.20.png}
+    \caption{Collocazione LakeHouse}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{img/Cap3-5.png}
+    \caption{Collocazione LakeHouse}
+\end{figure}
+
+
+\subsection{Google BigQuery}
+
+In questa sezione vedremo l’architettura di BigQuery, Il Cloud Data Warehouse nativo di Google.
+\noindent
+Ne vedremo le funzionalità principale da diverse prospettive, sia da utente finale del servizio Saas, sia dalla sua architettura interna. In BigQuery fluiscono molte delle idee analizzate nei paragrafi precedenti, evolvendosi come vedremo da un semplice query engine (Dremel) con capacità di lanciare query SQL sul file sistem distribuito di Google, fino a diventare un vero e proprio serverless data lakehouse qual è oggi. Su questo Google è pioniere, spingendo altri prodotti come Amazon Redshift a evolvorsi di conseguenza.
+
+\noindent
+BigQuery in più di una decade di sviluppi ha aiutato a rivoluzionare l’architettura dei cloud dataWarehouse e a semplificare l’analisi di ingenti quantità di dati anche da persone non tecniche e con un background solo in SQL. “SQL non scala” si è dimostrato un falso mito degli anni 2000, dove il focus principale era nella creazione di framework come MapReduce per l’analisi ingente di dati. Non solo si è dimostrato un falso mito, ma il SQL si è dimostrato semanticamente valido anche per esprimere computazioni sempre più complesse, come per esempio modelli di machine learning. BigQuery ML permette infatti con semplici primitive dichiarative di creare un modello, validarlo e fare inferenza direttamente su tabelle BigQuery.
+
+\noindent
+Nel prossimo capitolo vedremo anche come tools come DBT ne abbiano anche migliorato le pratiche di sviluppo, introducendo best practices tipiche dell’ingegneria del softwrare nel mondo dei datawarehouse analitici.
+
+\noindent
+BigQuery supporta transazioni (ACID), ha forti capacità di Data Governance (Row level security e column level security); è forse il servizio più integrato di Google: si possono lanciare query federate a CloudSQL, Google Cloud Storage, Google Drive ecc, creare pozzi di log da Cloud logging (il servizio di logging centralizzato di Google) e collegare facilmente a tool di BI come Looker e Looker Data Studio per reportistica e analisi.
+
+
+\subsubsection{Architettura}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{img/Cap3-6.png}
+    \caption{Architettura Dremel}
+\end{figure}
+
+\noindent
+Sotto il mantello BigQuery usa Dremel, il “Query Engine” di Google in produzione dal 2006, capace di scalare orizzontalmente e gestire dataset e tabelle sull’ordine dei petabyte per ogni singolo utente. Dremel si è distinto per essere uno dei primi sistemi a permettere l’analisi di una così ingente quantità di dati tramite SQL, introducendo innovazioni come la disaggregazione tra computazione e storage, analisi “in situ” dei dati e un formato colonnare dei dati capaci di gestire tipi di dati nidificati (records) e ripetuti (array) in maniera efficiente. 
+
+\noindent
+Dremel usa una struttura ad albero su diversi server executor per l’esecuzione delle query. Tracciando l’esecuzione di una query dalla richiesta della libreria cliente alla risposta con i dati le query vengono passate ad un root server che prende in carico il piano della query e lo sostituisce con una UNION ALL dei risultati dei nodi figli a cui si richiede di lavorare su partizioni della tabella diverse, effettuando eventualmente aggregazioni richieste dall’utente (da qui il nome di server mixers). Tutto questo avviene ricorsivamente fino a quando non si raggiungono i server foglie (chiamati slot).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{img/Cap3-7.png}
+    \caption{Query Processing}
+\end{figure}
+
+Gli slot sono la componente che si interfaccia con Colossus (il file system distribuito) e quindi con le partizioni delle tabelle riferite nelle query. Per fare questo efficiente BigQuery è stato pioniere di una rappresentazione fisica colonnare che supporti ripetizioni e record. ColumnIO include statistiche generali (min,max) prese in considerazioni quando serve dal query plan e utili per risparmiare computazione. Include inoltre un’header con puntatori alla location delle varie colonne all’interno del file e codifica liste e record tramite bit aggiuntivi che permettono di decodificare senza ambiguità anche liste e record (definizion and repetition levels). Nel corso degli anni ColumnIO si è evoluto in “Capacitor”, che implementa oltre alle suddette feature un rapporto di compressione più alto e permette di operare e filtrare colonne direttamente sul dato compresso, evitando spesso di decomprimerlo in memoria, un processo notoriamente CPU intenso.
+
+\subsubsection{Infrastruttura}
+Il Dremel di adesso è frutto di evoluzioni continue per permettere di competere e poi primiggiare i benchmark dei MPP su TB di dati. Il processo di disaggregazione da  monolite a orizzontalmente scalabile è senza dubbio tra i più importanti. Di fatto quando è stato concepito il primo prototipo fu rilasciato su infrastruttura dedicata utilizzando hardware e dischi di archiviazione specializzate, cercando di spremere la massima performance.
+\noindent
+La seconda era di BigQuery è nata lasciando infrastruttura dedicata e lasciandosi “gestire” da Borg: il servizio distribuito di Google per gestire carichi computazionali sui suoi datacenter. In questa fase la computazione cominciava a poter gestire Petabytes di dati con semplicità ma dato e computazione erano intimamente collegati, rendendo difficile lo sviluppo di nuove funzionalità poichè il software doveva essere capace di gestire le repliche del dato, oltre a rendere inaccessibile i dati al di fuori di Dremel.
+
+\noindent
+Per superare questa barriera si è deciso di passare a un file system distribuito (GFS prima, Colossus poi) come layer di archiviazione ottimizzato per ridurre la latenza (il maggiore blocco per la sua adozione) con catching/prefetching e innovazioni sul format colonnare.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{img/Cap3-8.png}
+    \caption{Query Processing}
+\end{figure}
+
+La componente di disaggregazione di memoria RAM, in produzione dal 2014, risolse poi uno dei problemi più bloccanti nell’adozione di BigQuery, l’implementazione dei JOIN tra tabelle relazionali, notorialmente difficili da scalare a causa dell’ingente quantità di dati da tenere in RAM (con eventuale spilling su disco). Si è deciso cosi di mplementare questa operazione (chiamata shuffle) in un servizio dedicato, riducendo la latenza e aumentando il throughput di più di un ordine di grandezza (figura in basso).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{img/Cap3-9.png}
+    \caption{Query Processing}
+\end{figure}
+
+La latenza network è poi alleviata da Andromeda e Jupiter, le software defined networks di Google capaci di gestire 1Petabit/sec di bisection bandwith. 
+
+Un’infrastruttura di rete talmente performante permette di ignorare di fatto il posizionamento delle risorse computazionali, e quindi usare l’intero datacenter di Google per scalare il carico di lavoro.
+
+%Capitolo 4
+\chapter{ETL \& ELT}
+\thispagestyle{empty} %Rimuovi numerazione a piè nella pagina introduttiva
+\fancyhead{} %Svuoto header
+\fancyhead[L]{CAPITOLO 4. ETL \& ELT} %Reimposto
+\fancyhead[R]{\thepage} %Reimposto pagina
+Questo capitolo si propone di approfondire quello che, indubbiamente, è uno dei processi principe del data engineering: “Extract, Transformation and Load” o, più semplicemente, ETL.
+\noindent
+ Il rapporto tra ETL e Data Warehouse è un rapporto di forte complementarità, in quanto i processi di ETL sono principalmente orientati al fornire i dati che il Cloud Data Warehouse si occuperà di gestire e presentare all’utente finale; in un certo senso, l’ETL è proprio un presupposto al Data Warehousing stesso e permette moltissime delle proprietà di quest’ultime, tra cui efficienza computazionale e integrazione tra i dati, di avere effettiva valenza pratica. Il capitolo si propone di studiare, inoltre, l’evoluzione dei processi ETL ad ELT, analizzandone differenze e necessità fondamentali.
+\section{ETL}
+I processi di ETL si preoccupano di realizzare a livello pratico tutto ciò di cui si era precedentemente discusso parlando del concetto di “Integrazione” nelle Data Warehouse: se quest’ultime devono risolvere la “Varietà” delle sorgenti Big Data, servendo da database unificato, si presuppone che possano, in qualche maniera, estrarre i dati necessari dai singoli “silo”, verificarne la correttezza di formato ed effettuando, all’occorrenza, opportune operazioni… ovviamente presupporre che la Data Warehouse faccia tutto questo direttamente implicherebbe non solo “addossarle” troppa responsabilità, ma soprattutto allontanarsi dal focus prettamente pratico di quest’ultime: archiviare e computare velocemente grandi quantità di dati; per questo si decide di affidarsi a software esterni che prendono in carico queste necessità da parte delle DW: estraggono i dati dalle sorgenti, ne verificano la correttezza, effettuando trasformazioni se necessarie, e li caricano nelle Data Warehouse . Nella parte progettuale del prossimo capitolo vedremo più in dettaglio tutto questo, sfruttando una tra le piattaforme più utilizzate nella pratica: Apache Airflow.
+\noindent
+Quando si tratta di processi ETL non vi sono problemi né nel capirne l’importanza e né nel capire cosa voglia dire “Extract”, piuttosto che “Transform” o “Load”. Il vero problema risiede nel pensare e strutturare un processo di ETL che sia efficiente al proprio contesto applicativo, in quanto tanto dell’aspetto prestazionale di quest’ultimo dipende dalle condizioni di contorno: sorgenti, tipologie di dato, computazioni, budget, necessità di business… difatti è spesso sconsigliato “riciclare” gli stessi approcci di progettazione di pattern ETL per contesti differenti, in quanto ciascuno performerà in maniera differente a seconda, proprio, delle suddette condizioni.
+\noindent
+Spesso, in letteratura, strutturare un processo di ETL comprende anche la progettazione della Data Warehouse  stessa. In quest’elaborato di tesi esuliamo da questo aspetto in quanto i più moderni sistemi di Warehousing, come ampiamente trattato, sfruttano architetture cloud PAAS e, in un certo senso, non c’è bisogno di nulla più che sottolineare gli aspetti che le rendono una scelta efficiente e competitiva per il Big Data management; per questo ci limiteremo a descrivere il funzionamento dell’ETL “puro”, inteso unicamente come concatenazione di processi di “Estrazione”, “Trasformazione” e “Caricamento”.
+\subsection{Extraction}
+L’iniziale fase di “Estrazione” comporta, come suggerisce il nome, la raccolta diretta dei dati dai sistemi operazionali; il processo tradizionale di ETL può essere schematizzato, nel suo complesso, come segue in “Figura 4.1”.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/SchemaETL.png}
+    \caption{Schema Generale ETL}
+\end{figure}
+
+\noindent
+È impossibile comprendere correttamente il processo di “Estrazione” se quest’ultimo viene totalmente esternato da quelle che saranno, poi, le successive fasi di “Transformation” e “Load”: come vedremo, queste due implicano la necessità di effettuare particolari operazioni sui dati e, per questo, necessitano di un database di appoggio intermedio che definiamo “Staging Area”. Il più sostanzioso problema dei pattern ETL è proprio la presenza di questa “Staging Area” che implica, comunque, un impiego maggiore di risorse; pecca che viene risolta proprio da ELT, come vedremo successivamente. La fase di “Estrazione” comporta, quindi, non solo l’estrazione dei dati direttamente dalle sorgenti operazionali, ma soprattutto garantire il loro corretto caricamento nella “Staging Area”, dove saranno successivamente processati. Com’è abbastanza semplice intuire, ad ogni valutazione della fase di “Estrazione” non può coincidere un’estrazione della totalità dei dati contenuti all’interno degli operazionali, ciò sarebbe inutile oltre che inefficiente, bisogna implementare, quindi, una logica che permetta di estrarre solamente i dati “più recenti” rispetto alla valutazione precedente; quest’ultima viene tipicamente realizzata tramite una commistione tra due delle principali soluzioni: “colonne di Audit” e “Full Diff Compare”. La prima, detta anche delle “colonne di Verifica”, impone la realizzazione di uno script back - end che vada a modificare direttamente la logica di memorizzazione degli OLTP, aggiungendo un nuovo attributo temporale coincidente con la data di inserimento nel database di tale tupla o, comunque, un label che fornisca informazioni affini: tramite quest’ultimo è possibile estrarre facilmente tutti i dati che abbiano attributo temporale pari ad una specifica data come, ad esempio, quella del giorno precedente all’estrazione (SYSDATE - 1)… analoghi ragionamenti si fanno per operazioni di modifica di record preesistenti. La frequenza di valutazione dell’ETL, e della fase di “Extraction” di conseguenza, dipende ovviamente dalle particolari esigenze di business; indipendentemente, le soluzioni software si dimostrano abbastanza semplici da implementare e questa semplicità viene proprio con un sostanziale problema di “robustezza”: se l’estrazione venisse, per qualunque motivo, interrotta a mid - process e riniziata successivamente, senza un rapido intervento manuale potrebbero perdersi dati o caricare duplicati nella Staging Area; si pensi, semplicemente, se venisse saltata una valutazione giornaliera del processo di ETL, approcci come SYSDATE - 1 non permetterebbero di estrarre i dati precedentemente tralasciati. “Full Diff Compare, d’altro canto, si basa sul preservare una copia dei dati estratti nella valutazione precedente dell’ETL all’interno della Staging Area, in modo da poter estrarre solamente i dati più recenti effettuando comparazioni record - record; è lampante come questo metodo sia terribilmente dispendioso a livello di memoria e capacità computazionale, ma come sia anche molto affidabile: il “Full Diff Compare” permette di rilevare qualunque tipo di variazione nei dati e non è sensibile alle interruzioni o malfunzionamenti come le “colonne di Audit”. Nella pratica, tutte le soluzioni moderne si basano su un approccio ibrido tra queste due tecniche, che permetta di compensare, quantomeno parzialmente, le mancanze di ambedue; soluzioni di questo tipo fanno parte della cosiddetta “Estrazione Incrementale”. La fase di “Extraction”, infatti, si articola in due particolari momenti: “Popolazione del Warehouse” ed “Estrazione Incrementale”. La “Popolazione” coincide, fondamentalmente, con la primissima valutazione di un processo di ETL e, tipicamente, è non solo l’estrazione “più semplice”, in quanto non è necessario effettuare comparazioni o selezioni particolari essendo il DW destinatario vuoto, ma anche la più dispendiosa, dovendo estrarre la totalità dei dati contenuti negli operazionali. Processi di “Extraction” moderni ed orientati ai volumi “Big Data” preferiscono, spesso, una logica di estrazione “a file”: convertire i dati all’interno degli OLTP in formati come “flat file”, “XML”, “Parquet”… ha molteplici vantaggi, in quanto, molto spesso, con volumi questo tipo il collo di bottiglia ai processi di ETL sono le infrastrutture informatiche su cui i dati stessi dovrebbero viaggiare ed una conversione a file permette, oltre che possibilità di cifratura e, quindi, di sfruttare reti pubbliche per il trasferimento, di sfruttare i noti meccanismi di compressione, potendo ridurre dal $30$ al $50\%$ il tempo necessario alla fase di “Extraction”; proprio la velocità è, soprattutto ad oggi, la caratteristica principe degli ETL ed i motivi sono, sostanzialmente, gli stessi che ci avevano portato a discutere tutte le alternative più computazionalmente efficienti di database: le analisi devono essere effettuate in tempo reale e su dati costantemente aggiornati.
+\subsection{Transform}
+La fase di “Transform” comporta l’esecuzione di una serie di operazioni atte al garantire due aspetti sostanziali: struttura e consistenza dei dati caricati nella Staging Area dalla precedente fase di “Extract”. Fondamentale chiarire fin da subito che la fase di “Transform” non può essere vista come la “panacèa” a qualunque tipo di inconsistenza o scarsa qualità del dato, bensì debba garantire che dati di qualità nelle sorgenti operazionali siano di qualità anche nelle Warehouse; il concetto è sostanzialmente questo: non esiste alcun tipo di “Transform” che possa, ad esempio, “sanare” un indirizzo incompleto, una mail inserita in un formato non corretto, campi mancanti… Per questo è fondamentale che le aziende o, più generalmente, chiunque sia incaricato di raccogliere i dati sul campo, adotti una serie di accorgimenti che permettano di troncare queste problematiche sul nascere: i cosiddetti “Quality Screens”, che sono, d’altronde, il cuore concettuale della fase di “Transform” stessa. Per “Quality Screens” si intendono una serie di controlli a cui viene sottoposto il singolo dato per rilevare eventuali inconsistenze ed azioni correttive; molto spesso si tratta di semplici test a logica colonnare: viene verificato se ci siano valori nulli inaspettati, come la violazione di un determinato formato o valori che cadano al di fuori di un certo intervallo di definizione… i moduli di registrazione ad una determinata piattaforma/sito web sono un esempio del tutto calzante al nostro discorso: gli errori che vengono generati se si provasse a sottomettere, ad esempio, un’età negativa o una mail che non contiene i marcatori fondamentali, come la “@”, sono in tutto e per tutto “Quality Screens”; difatti quello che succede nella fase di “Transform” non è poi così differente. Da questo si evince come, in un certo senso, quest’ultima inizi già da una buona “educazione” al trattamento dei dati o, più tecnicamente, “Data Governance”.
+
+\noindent
+Nella “Staging Area” si riserva una zona di memoria dove vengono caricati i dati che non soddisfano tutti i controlli, per poi processarli successivamente: nella pratica, non si usa caricare il singolo dato non appena un “Quality Screen” fallisca, bensì tutti i dati vengono sottoposti a tutti i controlli progettati in modo da evitare di rilevare inconsistenze parziali nel caso non venga soddisfatto più di un “Quality Screen”. Ovviamente, ciascun fallimento implica azioni correttive differenti e, anche qui, è importante adottare opportuni meccansimi che permettano di catalogare ed organizzare correttamente gli errori, in modo tale da rendere più efficiente l’applicazione di azioni correttive: nella pratica, si costruisce un cosiddetto “Error Event Schema”, fondamentalmente uno “Star Schema” dove il “fatto” è l’errore stesso e le “dimensioni” aggiungono informazioni all’errore, come lo screen che lo ha generato ad esempio, quale permette di identificare con semplicità tutti i record che hanno generato un errore comune, per poi correggerlo; il processo di correzione presuppone che si possa effettivamente correggere le inconsistenze, effettuando computazioni ed operazioni generali che dipendono dal particolare errore generato e dalla logica applicata, mentre in alcuni casi, tipicamente dove la “Data Governance” è abbastanza scarsa, si potrebbe decidere di implementare “Quality Screens” che scartino direttamente i dati con inconsistenze palesi, come quelle citate precedentemente, all’interno della “Transform” ETL stessa. Per i dati che, invece, soddisfano tutti i controlli, si cerca di effettuare operazioni di integrazione e strutturazione nel formato destinatario della Warehouse, queste tipicamente comportano: aggregazioni, unione di dati da sorgenti differenti, aggiunta di attributi e generazione di metadati conformi alla logica di business… queste sono, tipicamente, tutte operazioni abbastanza semplici che, però, richiedono alla “Staging Area” una capacità computazionale comunque importante, aspetto su cui ritorneremo trattando successivamente della transizione ELT. Si noti come non si sia fatto alcun tipo di riferimento a dati strutturati e non strutturati, rispecchiando tutti i concetti di cui abbiamo parlato il funzionamento generalissimo della fase di “Transform” in un processo di ETL; tuttavia, gli unstructured data necessitano di degli accorgimenti particolari, che tratteremo in dettaglio nella prossima sezione.
+\subsection{Load}
+La fase di “Load” comprende, sostanzialmente, la “consegna” dei dati correttamente strutturati alle Warehouse, garantendone il caricamento e la gestione di alcune situazioni particolari. Sebbene possa sembrare la fase più semplice e banale tra tutte, in realtà riveste una fondamentale importanza, in quanto le precedenti “Extraction” e “Transform” perdono totalmente di senso se i dati non vengano correttamente caricati e messi a disposizione della Warehouse. Il perché la fase di “Load” sembri apparentemente così semplice è relativo ad un concetto che, nei precedenti capitoli su OLTP, OLAP e Data Warehousing, avevamo già discusso: la “profondità temporale” dei dati; le DW sono pensate per effettuare computazioni efficienti su volumi di dati che, spesso e volentieri, coprono un orizzonte temporale di diversi anni e, proprio per questo, logiche tradizionali di gestione dei dati abbracciano il concetto di “multidimensionalità”. In un certo senso, nella disamina su MOLAP e ROLAP, abbiamo peccato, e non poco, di presunzione: non si è mai esplorata l’ipotesi, assolutamente realistica, che ci possa essere una certa dimensione, di uno stesso dato, che possa cambiare nel tempo. Riprendendo lo stesso esempio dei capitoli precedenti, supponiamo che la dimensione “Prodotto” presenti un attributo “Prezzo”, direttamente ricavabile dagli attributi “Incasso” e “Quantità” del fatto “Vendita” d’altronde, e supponiamo di analizzare, tramite la chiave “Codice Prodotto”, due eventi di vendita distinti: se quest’ultimi presentassero attributi “Prezzo” differenti, la situazione non sarebbe così sconvolgente in quanto i prezzi di un singolo prodotto tendono a variare cospicue volte durante l’anno; questo fenomeno viene definito in gergo “Slowly Changing Dimensions - SCD”. Sebbene la gestione di questo tipo di situazioni sia di una semplicità disarmante nei database operazionali, in quanto relativa a gestione di istruzioni analoghe ad “UPDATE” SQL per la logica relazionale, il discorso non è altrettanto banale nelle Warehouse ed il perché risiede nel concetto di “Estrazione Incrementale”: valutazioni successive della fase di “Extraction” trattano un record soggetto precedentemente a modifica come se fosse stato inserito recentemente e, quindi, come uno dei “most recent data” effettivamente estratti; se quest’ultimo aspetto vale, e vale, ciò vorrebbe dire che, adottando una logica ROLAP ad esempio, la fase di “Load” fallirebbe a priori in quanto si starebbe cercando, indipendentemente dalla modifica, di inserire nuovamente lo stesso record e, quindi, permettere valori duplicati delle chiavi. Per ovviare a questo problema, i modelli ROLAP, come accennato nella sezione relativa, adottano particolari tipologie di chiave dette “Surrogate Key”: sostanzialmente interi che vengono assegnati al singolo record progressivamente e che lo definiscono univocamente, eleggibili appunto come chiavi; le “Surrogate Key” sono aggiunte dirette della fase di “Transform”, effettuate all’interno della “Staging Area” stessa, e fanno parte di tutte quelle operazioni di strutturazione e integrazione dei dati già discusse precedentemente. Chiavi come il “Codice Prodotto” sono attributi che identificano univocamente l’entità in questione anche nella “realtà” al di fuori del database e, per questo, vengono spesso definite “Natural Keys”: il fenomeno delle SCD impone che la funzionalità di chiave venga scorporata dalla “Natural Key” in un intero che viene assegnato automaticamente, sfruttando logiche molto simili a contatori, tramite una serie di operazioni comunemente definite come “Surrogate Key Pipeline”; il meccanismo delle chiavi surrogate permette di tenere traccia dell’evoluzione nel tempo di tutte le dimensioni di un determinato fatto e questo chiarisce, ancor di più, il concetto di “profondità temporale” dei dati in un DW. 
+Tutte le considerazioni precedentemente effettuate si sono basate sulla supposizione che una certa dimensione, come il “Prezzo” di un prodotto, vari in modo significativo per il business ed, in realtà, non è sempre così: casi particolari di SCD sono tutti quegli “UPDATE” operazionali mirati alla correzione di record precedentemente inseriti, validi per i “Quality Screen” ma presenti, ad esempio, di errori di battitura; in questo caso, com’è abbastanza facile intendere, tenere traccia del record errato precedente non è, in alcuna maniera, rilevante e, ovviamente, le “Surrogate Key” permetterebbero assolutamente di aggiungere il record corretto come nuova tupla, ma, a quel punto, come si potrebbe distinguere il record corretto da quello errato? Questo stesso problema, in una forma leggermente differente, si presenta anche per SCD significative come la variazione di “Prezzo”: come è possibile distinguere il record più recente da quello meno recente? Richieste di questo tipo sono, in molti casi, assolutamente critiche; da qui in avanti faremo riferimento con “SCD tipo 2” al primo caso che abbiamo analizzato e con “SCD tipo 1” a tutte quelle variazioni non significative. Una soluzione possibile per le “SCD tipo 1” è estendere lo stesso “UPDATE” degli operazionali anche ai Data Warehouse, difatti si fa spesso riferimento a “tipo 1 - Overwrite”: si localizza l’attributo modificato e si sovrascrive il relativo record errato all’interno del DW, logica totalmente analoga alle istruzioni di modifica. Gli “Overwrite” vengono sempre e comunque disincentivati in quanto “performance killer”: la richiesta di modifica non viene delegata alla “Staging Area”, bensì viene presa in carico ed effettuata all’interno del Warehouse stesso, terribilmente inefficiente per questo tipo di operazioni in quanto a logica colonnare. Per ovviare a questo problema, si decide di risolvere anche tutte le criticità della tipo 2 “ibridandola” al tipo 1: indipendentemente che la modifica operazionale sia o meno rilevante per il business, si decide comunque di sfruttare i meccanismi offerti dalle chiavi surrogate ed inserire il record modificato come nuova tupla, provvedendo all’aggiunta di due nuovi attributi “timestamp” analoghi alle già discusse “colonne di Audit” per la fase di estrazione; il primo attributo “timestamp start” indica la data di inserimento del record corrente nel DW, mentre il secondo “timestamp end” indica la data di inserimento di una versione aggiornata del record stesso, relativo a modifiche negli operazionali ed, ovviamente, nullo nel caso queste non siano state effettuate. In questo modo si riesce ad evitare di passare per un “Overwrite” diretto e, sia per SCD tipo 1 o 2, è possibile distinguere chiaramente un record più recente da un record meno recente grazie al che “timestamp end” sia nullo o meno; gli attributi “timestamp” sono aggiunti direttamente all’interno della “Staging Area”. Questo tipo di soluzione comporta, inevitabilmente, un impiego di memoria eccessivo, in quanto vengono caricate nuove tuple anche per tutti quei casi dove non ve ne si traggono direttamente informazioni significative: particolarmente utilizzata, infatti, per implementazioni Cloud based. La fase di “Load” inserisce direttamente, e senza alcun tipo di criticità, nuovi record nel Warehouse che non siano relativi ad operazioni di modifica, altrimenti applicherà tutti gli accorgimenti precedentemente discussi per gestire questo tipo di situazioni particolari. 
+Si noti come tutta la nostra discussione ha avuto una forte matrice relazionale, in quanto ci concentriamo principalmente sui sistemi ROLAP, tuttavia è possibile estendere quanto detto anche ai modelli MOLAP ed approfondire ancor meglio tutte le criticità già discusse nella sezione relativa: progettare un pattern ETL per modelli MOLAP ha una complessità sulla fase di “Transform” e “Load” ancora maggiore della controparte ROLAP, in quanto situazioni come “SCD tipo 1 - Overwrite” comportano il ricalcolo, parziale o meno, di tutte le aggregazioni per ogni granularità delle dimensioni e proprio quest’eccessiva dispendiosità a livello di risorse comporta inevitabilmente una complicazione del modello, rendendolo più vincolante e meno reattivo.
+
+\section{ELT}
+
+I data warehouse massivamente scalabili che abbiamo introdotto nel capitolo precedente sono gli enabler di un nuovo pattern di integrazione del dato, insieme ad alcune tecnologie di cui parleremo in questo capitolo.
+Cambiare le lettere nell’acronimo da ETL a ELT non annulla, anzi sottolinea molte delle tecniche che abbiamo analizzato nel precedente paragrafo.
+\noindent
+Alcuni punti di attenzione, come per esempio la “staging area”, il parcheggio dei dati tra le sorgente e destinazioni, necessario per usare risorse computazionali dei pacchetti ETL senza affaticare i sistemi operazionali; vedremo non essere più necessari in questo secondo pattern.
+\noindent
+L’innovazione del pattern ELT è diretta conseguenza delle innovazioni dei Cloud Data Warehouse: sfruttare il virtualmente infinito spazio di archiviazione dei data lake (o storage dei datawarehouse) come staging area dei processi di trasformazioni e le ingenti, orizzontalmente scalabili,  risorse computazionali in modalità serverless dei moderni data warehouses come BigQuery per gestire, trasformare il dato e di fatto, implementare le best practices dei processi ETL che abbiamo analizzato nel paragrafo precedente.
+\noindent
+I moduli di cui abbiamo discusso e implementano la generazione delle chiavi surrogate, la gestione della duplicazione, monitoring delle trasformazioni ecc rimangono ma sono adesso gestite completamente nel data warehouse , orchestrate da software specializzato e sviluppato in SQL, la lingua franca dei data analyst.
+
+\noindent
+Spesso i software ETL sono impacchettati dai vendor come pacchetti integrati che implementano tutti i processi di estrazione, trasformazione. Questo tipo di architettura si dissocia molto dai moderni ELT, il quale riconosce il bisogno di usare software specializzato e soprattutto estendibile per la fase di estrazione. L’estensibilità è importante per l’enorme varieta dei prodotti dati all’interno delle organizzazione; e che sono peraltro in continua evoluzione.
+Non basta progettare data warehouses ideali per il giorno d’oggi, bisogna pensare a come estenderlo con i sistemi informativi del domani.
+Volevo sottolineare in questo ambito lo sviluppo e gli investimenti di piattaforme che facilitano la data integration come Airbyte, software open source che sta crescendo molto in termine di supporto ed azione dalla community open source.
+Come vediamo dalla schermata Airbyte permette di gestire la parte di Estrazione e Caricamento da una UI molto pulita, supportando centinaia di integrazioni e inoltre mette a disposizione development kit per connettori che rendono il software estendibile, aiutando anche a contribuire alla community.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.12]{img/cap4-1.jpeg}
+    \caption{Airbyte: A load facility}
+\end{figure}
+
+Con Airbyte basta connettere sorgenti e destinazioni e triggerare, per esempio con un operatore Airflow, un’integrazione per effettuare fluidamente un processo di estrazione e caricamento.
+
+
+Una volta integrato il dato all’interno del data warehouse, si passa alla fase di trasformazione.
+Google Bigquery, Amazon Redshift, Azure Synapse Analytics, Snowflake come abbiamo visto nel capitolo 3 sono i prodotti di maggior successo nella categoria dei cloud Data Warehouses. 
+Abbiamo visto che la loro architettura software basata su query engines orizzontalmente scalabili li rende enormemente parallelizzabili e quindi capaci di gestire trasformazioni di anche Terabyte di dati a pochissimo prezzo (soprattutto con tecnologie serverless) e in brevissimo tempo.
+Come abbiamo visto il SQL non è un linguaggio “general purpose”, ne il più adatto per costruire software, ma per gli use case propri del data warehousing è molto espressivo e perfettamente adatto per il lavoro. 
+Di fatto, anche i moderni tool di data science come Pandas e Spark supportono delle API che permettono di definire la logica di trasformazione direttamente in SQL. Inoltre il SQL è un linguaggio molto usato anche da analisti che spesso non hanno skill di programmazione avanzate richieste da un linguaggio general purpose come Java, di fatto rendendo più accessibile questo tipo di lavoro.
+Quasi tutti i tipi di trasformazione che abbiamo visto nella parte relativa all’ETL sono traducibile in SQL direttamente nel data warehouse, senza il collo di bottiglia di un sistema on-premises non elastico come la staging area di un tool ETL.
+Questo non vuol dire che non ci siano delle difficoltà nell’adottare questo tipo di architettura. Non risultano magari evidenti in progetti piccoli e trasformazioni banali, ma quando c’è bisogno di integrare centinaia di tabelle per modellare processi di business complessi; emergono problematiche serie e sfide importanti dal punto di vista di ingegneria del software e , quindi, di gestione della complessità
+Gestire complessità richiede delle best-practice e tools che sono spesso assenti nei cloud data warehouse; ma che invece sono molto sviluppate e mature nell’ambito dello sviluppo software in linguaggi general purpose: versionamento, documentazione, tests, tool di build e modularità del codice. 
+Fortunatamente  sono emersi di recente dei tools che permettono di applicare le best practices di sviluppo software anche per pipeline di data engineering, uno su tutti, DBT.
+
+\subsubsection{DBT}
+\noindent
+Dalla sua fondazione nel 2016  DBT (Data build tool) ha catturato una porzione di mercato importante nel mercato dei tool di gestione trasformazioni nel data warehousing, con una valutazione complessiva di 4 miliardi di dollari aggiornata al 2024.
+
+\noindent
+Si differenzia dai vecchi tool di trasformazione del dato per un approccio SQL-first per lo sviluppo di codice analitico e introducendo dei meccanismi di best practice del software tipicamente lanciati in linguaggi di programmazione general purpose tramite i build tool (da cui prende il nome), come Maven/Gradle per Java, setuptools per python o CMake per C++.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/cap4-2.png}
+    \caption{Il ruolo di DBT all'interno del processo ELT }
+\end{figure}
+
+\noindent
+DBT introduce il concetto di modello, l’unità principale di una trasformazione del dato in un dato warehouse e si presenta come uno statement sql di tipo select a cui delega la materializzazione del dato a un parametro di configuraizione esterno, disaggregando la logica di business dal tipo di output della query, che può essere di fatto una tabella, una vista, una vista materializzata ecc. Ogni modello DBT può far riferimento a tabelle sorgenti o altri modelli DBT, di fatto definendo un grafo diretto aciclico delle dipendenze sulle trasformazioni del data warehouse, costruendole dinamicamente a partire dalla solita definizione della query nel modello DBT. Un esempio di modello è il seguente:
+
+\begin{verbatim}
+with users_source as (
+select * from {{ ref('users_source')}}
+), possible_traffic as (
+select * from {{ ref('traffic_sources')}}
+)
+select
+{{ hash_sensitive_columns('users_source')}}
+from
+users_source
+where traffic_source in (
+select * from possible_traffic
+)
+\end{verbatim}
+
+\noindent
+dove le funzioni ref sono riferimenti a modelli definiti all’interno dello stesso progetto dbt. (Il nome del modello è ricavabile direttamente al nome del file sotto cui è scritto, i.e usersource.sql).
+
+\noindent
+Questo è uno dei primi vantaggi di adozione di un tool DBT. Di fatto la gestione dinamica delle dipendenze non è supportata negli orchestratori come Airflow che vedremo nel capitolo 5, a causa della loro natura general purpose non incentrata sulla trasformazione del dato e non opinionata dallo stile di trasforamzione da adottorare in un data warehouse. 
+
+\noindent
+All’interno dei modelli DBT è possibile esprimere delle macro e degli script Jinja (il linguaggio standard di template utilizzato nei maggiori web framework python come Flask per il rendering di pagine html) che permettono di esprimere logiche spesso tediose e ripetitive e renderizzarle in modo che l’output finale sia un modello SQL valido dopo la compilazione di DBT. 
+
+\noindent
+In esempio è possibile scrivere macro che effettuano applicano una funzione hash supportata dal datawarehouse ad ogni attributo del modello DBT taggato con una particolare condizione, o semplicemente ridurre il boilerplate di un **case when** in sql costruendolo ciclando su una lista di valori in jinja. Esiste un numeroso numero di pacchetti che implementa macro molto utili per un data engineer o un data analyst. Per esempio la seguente macro permette di diminuire il boilerplate SQL delle CTE (common table expression):
+
+\begin{verbatim}
+{% macro simple_cte(tuple_list) %}
+WITH{% for cte_ref in tuple_list %} {{cte_ref[0]}} AS (
+SELECT *
+FROM {{ ref(cte_ref[1]) }}
+)
+{%- if not loop.last -%}
+,
+{%- endif -%}
+
+{%- endfor -%}
+
+{%- endmacro %}
+\end{verbatim}
+
+\noindent
+La suddetta macro è utilizzabile nel seguente modo (le righe che iniziano con \emph{--} sono commmenti e sono il risultato della compilazione della macro):
+\begin{verbatim}
+{{ simple_cte([
+('orders', 'orders_source'),
+('order_items', 'order_items_source'),
+('inventory_items', 'inventory_items_source')
+]) }}
+-- with orders as (
+-- select
+-- *
+-- from {{ ref('orders_source')}}
+-- ), order_items as (
+-- select
+-- *
+-- from {{ ref('order_items_source')}}
+-- ), inventory_items as (
+-- select
+-- *
+-- from {{ ref('inventory_items_source')}}
+-- )
+select
+orders.*,
+order_items.product_id,
+order_items.inventory_item_id,
+inventory_items.sold_at
+from orders
+left outer join order_items on orders.order_id = order_items.order_id
+left outer join inventory_items on order_items.inventory_item_id = inventory_items.id
+\end{verbatim}
+
+\noindent
+Proprio quest’ultima funzionalità è uno dei valori aggiunti di DBT, la possibilità di creare dei pacchetti esterni riutilizzabili all’interno del progetto è una lacuna molto importante che non è mai stata indirizzata prima dell’introduzione di tool come DBT. Il concetto  DRY (Do not repeat yourself) è una massima fondamentale nel software engineering che incoraggia a non reinventare la ruota, usando pacchetti adibiti e collaudati all’interno di indici di pacchetti,. ad esempio PyPI in python, npm in javascript, Maven repository central in java ecc..
+\noindent
+DBT introduce il concetto di package che è possibile costruire e caricare su DBT hub o in repository organizzative private in modo da riutilizzare macro, test o procedure scritte da membri della community. Per utilizzarla basta semplicemente scrivere un file packages.yml
+con nome del package e versione, i.e:
+\begin{verbatim}
+- package: dbt-labs/dbt_utils
+version: 1.1.0
+- package: dbt-labs/metrics
+version: [">=1.5.0", "<1.6.0"]
+- package: calogica/dbt_expectations
+version: [">=0.8.0", "<0.9.0"]
+- package: data-mie/dbt_profiler
+version: 0.6.4
+\end{verbatim}
+
+\noindent
+DBT permette di scrivere anche unit test sul funzionamento dei modelli o per esprimere particolari proprietà delle colonne nei modelli sql.
+Per esempio moderni datawarehouse come BigQuery non avevano fino a poco tempo fa il concetto di chiave primaria tipica di ogni database OLTP, in DBT è possibile scrivere dichiaratamente un “singular test” su un file yaml che permette di fare questo check.
+Al momento della compilazione DBT genera query apposite per implementare i check in modo che se la query compilata ritorna qualche record, il test viene considerato fallito.
+E’ possibile inoltre  scrivere “generic test” che implementano lo stesso concetto ma per controlli più sofisticati o logiche di business. 
+Il meccanismo di test può essere poi integrato in una pipeline di CI/CD in cui si lancia il comando “dbt test” e, se non ci sono errori, si procede a runnare e rilasciare il codice che definisce la pipeline di trasformazione.
+DBT offre svariate altre funzionalità, alcune degne di nota e utilissima come la documentazione automatica e la lineage del grafo dei modelli come visualizzato in figura.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{img/cap4-3.png}
+    \caption{DBT Lineage graph}
+\end{figure}
+
+\noindent
+Queste funzionalità nel complesso lo rendono lo stato dell’arte al momento  e lo distingue come leader in un settore che sta vedendo emergere anche altri prodotti, uno in particolare Dataform, comprato recentemente da Google e integrato direttamente in BigQuery.
+%Capitolo 5
+\chapter{Airflow \& Composer}
+\thispagestyle{empty} %Rimuovi numerazione a piè nella pagina introduttiva
+\fancyhead{} %Svuoto header
+\fancyhead[L]{CAPITOLO 5. Airflow \& Composer} %Reimposto
+\fancyhead[R]{\thepage} %Reimposto pagina
+In questo capitolo vedremo in azione molti dei concetti teorici analizzati nei precedenti capitoli e tecnologie che le implementano.
+Nel capitolo 4 abbiamo elencato e discusso pattern architetturali sul mondo ETL, introducendo argomenti e best practices per la gestione ottimale dei processo di estrazione, transformazione e carimento del dato. 
+In particolare discuteremo in questo capitolo di come una pipeline che implementa l'architettura ELT in cui le rispettive parti di Estrazione, Caricamento e Trasformazione sono orchestrate da Apache Airflow, software open source che facilita la costruzione di data pipeline scalabili e gestibili da interfaccia web e/o linea di comando.
+Analizzeremo l'architettura software di Airflow nel paragrafo 5.1, spiegando le varie componenti e che funzionalità implementano, cercando di analizzare pezzi di software nella sua repository open source.
+Vedremo poi Google Cloud Composer. La soluzione gestite da Google per Apache Airflow, che mappa i componenti di Airflow nell'infrastruttura di Google con soluzioni Cloud Native (containerizzazione, orchestrazione di container (GKE) e soluzione RDBMS gestita da Google tramite CloudSQL)
+Nel corso dell’elaborazione presenterò pezzi di codice inerenti alle tecnologie spiegati che,  raggruppati, implementano una pipeline Ariflow in Composer su Datawarehouse BigQuery usando l’infrastruttura Google Cloud e gestita tramite IaaC terraform.
+\section{Apache Airflow}
+
+Tra le varie soluzioni di orchestrazione di data pipeline Apache Airflow si contraddistingue per la sua estensibilita’, scalabilita’ ed espressività incentrata su definizione di task di orchestrazione tramite codice.
+Molti sistemi di orchestrazione GUI-based in realtà sono spesso poco customizzabili e nella loro evoluzione finiscono per non essere più mantenuti a causa dell'enorme complessità dell'era dei BigData con una svariata miriade di Data Sources da supportare.
+L'architettura di Airflow, come vedremo, basata su definizione di DAG (directed acyclic graphs) con codice python si distingue per la sua flessibilità; è inoltre  un esempio di architettura open in cui è molto semplice scrivere plugin python che implementano connettori per estenderne le funzionalità.
+\noindent
+Adottare una soluzione di Dag-as-code comporta vantaggi significativi sotto il profilo della gestione dei dag, a costo di avere una minima esperienza nello sviluppo software. Per esempio si possono usare strumento di versionamento del codice come Git e Subversion per la gestione dei dag. Usare git significa avere a disposizione uno strumento collaborativo e di tracciabilità delle modifiche con  possibilità di roll-back immediato nel caso di introduzioni di bug all’interno del software.
+\noindent
+Usare git per versionare dag airflow rende possibile collegare strumenti di CI/CD all’interno della repository come github/gitlab actions, google cloud build o altre a seconda del provider. La CI/CD automatizza deploy e integrazioni del codice con la possibilità di gestire e triggerare rilasci del codice comprensorie di unit test, integration test e  deploy automatici ad ogni pull request nel branch master della repository del codice Airflow.
+
+\textbf{Dag as code}
+
+\noindent
+L’interfaccia principale per interazione con Apache Airflow è un’applicazione web accessibile da browser. In figure 1 viene elencata la lista dei dag che come vedremo è costruita da metadati processati dallo scheduler durante il parsing del codice python scritto dagli sviluppatori.
+Dall’interfaccia si possono attivare/disattivare i Dag, amministrare l’ambiente compreso accessi e variabili, oltre alla possibilità di osservare il dettaglio dei dag definiti, compreso lo storico dei run passati.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/cap5-1.png}
+    \caption{Airflow Dags UI}
+\end{figure}
+
+\noindent
+L’applicazione  offre funzionalità di monitoraggio avanzate come l’introspezione a diversi livelli di granularità del Dag, visualizzare il grafo di dipendenze dei vari task che compongono i Dag, guardare il codice Python che lo definisce, oltre a  grafici Gaant per monitoraggio dei tempi di esecuzione; funzionalità, quest’ultima, molto utile nel troubleshooting di problemi di performance e colli di bottiglia.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/cap5-2.png}
+    \caption{Airflow Internal DAGS UI}
+\end{figure}
+
+\noindent
+Nel seguente snippet di codice possiamo apprezzare come un Dag viene definito nella pratica.
+La classe fondamentale è “Dag” dal package airflow.models.dag che implementa un context manager al suo interno, una best practice di python che permette di gestire apertura e chiusura delle risorse in maniera automatica se il dag è instanziato con un with statement, come nell’esempio.
+All’interno del context manager è poi possibile instanziare i task che comporranno il Dag, che possono essere di svariati tipi.  Airflow è flessibile nella definizione dei task grazie alla gestione dei task tramite gli operator del package python airflow.operators, in particolare nell’esempio osserviamo come è possibile creare un task che effettua una chiamata a una funzione Python in scope nel codice tramite il PythonOperator. L’estensibilità nella gestione delle operazione è derivata da questo meccanismo perché è possibile definire un singolo operatore che implementa funzionalità personalizzabili semplicemente creando una classe che estende la classe BaseOperator nel package airflow.operators. 
+Airflow, essendo di fatto l’orchestratore più diffuso in contesti ELT presenta un catalogo immenso di operatori e ogni cloud provider ha provveduto ad implementare il suo per specifici use case.
+Ad esempio Google mette a disposizione un catalogo importante per effettuare operazioni comuni come il trasferimento di file presenti in GCS su BigQuery (GCSToBigQueryOperator), 
+piuttosto che all’esecuzione di un job in bigquery (BigQueryInsertJobOperator). La combinazione di svariati operatori uniti da un’API comune è perfetta per la gestione di ELT anche su provider diversi.
+L’interpretazione dinamica del python che definisce i task è un punto di forza perché permette di dichiarare i task che compongono il dag direttamente a runtime; ad esempio si possono usare e creare task in un loop secondo logiche definite a codice, un approccio senza dubbio utile e meno verboso di strumenti puramenti dichiarativi che definiscono task tramite file di configurazione YAML o JSON.
+La gestione delle dipendenze tra i vari task è dichiarata a codice con l’operatore di shift: nell’esempio extract\_task >> trasform\_task dichiara che trasform\_task è dipendente dall’esecuzione corretta di extract\_task. Si possono poi aggregare i task in una lista per definire dipendenze multiple, in esempio [task1, task2] >> task3 dichiara che task 1 e task 2 possono procedere in parallelo ma task3 deve aspettare l’esecuzione corretta di entrambi i task.
+\begin{verbatim}
+
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+"""
+### DAG Tutorial Documentation
+This DAG is demonstrating an Extract -> Transform -> Load pipeline
+"""
+
+from __future__ import annotations
+
+# [START tutorial]
+# [START import_module]
+import json
+import textwrap
+
+import pendulum
+
+# The DAG object; we'll need this to instantiate a DAG
+from airflow.models.dag import DAG
+
+# Operators; we need this to operate!
+from airflow.operators.python import PythonOperator
+
+# [END import_module]
+
+# [START instantiate_dag]
+with DAG(
+    "tutorial_dag",
+    # [START default_args]
+    # These args will get passed on to each operator
+    # You can override them on a per-task basis during operator initialization
+    default_args={"retries": 2},
+    # [END default_args]
+    description="DAG tutorial",
+    schedule=@daily,
+    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+    catchup=False,
+    tags=["example"],
+) as dag:
+    # [END instantiate_dag]
+    # [START documentation]
+    dag.doc_md = __doc__
+    # [END documentation]
+
+    # [START extract_function]
+    def extract(**kwargs):
+        ti = kwargs["ti"]
+        data_string = '{"1001": 301.27, "1002": 433.21, "1003": 502.22}'
+        ti.xcom_push("order_data", data_string)
+
+    # [END extract_function]
+
+    # [START transform_function]
+    def transform(**kwargs):
+        ti = kwargs["ti"]
+        extract_data_string = ti.xcom_pull(task_ids="extract", key="order_data")
+        order_data = json.loads(extract_data_string)
+
+        total_order_value = 0
+        for value in order_data.values():
+            total_order_value += value
+
+        total_value = {"total_order_value": total_order_value}
+        total_value_json_string = json.dumps(total_value)
+        ti.xcom_push("total_order_value", total_value_json_string)
+
+    # [END transform_function]
+
+    # [START load_function]
+    def load(**kwargs):
+        ti = kwargs["ti"]
+        total_value_string = ti.xcom_pull(task_ids="transform", key="total_order_value")
+        total_order_value = json.loads(total_value_string)
+
+        print(total_order_value)
+
+    # [END load_function]
+
+    # [START main_flow]
+    extract_task = PythonOperator(
+        task_id="extract",
+        python_callable=extract,
+    )
+    extract_task.doc_md = textwrap.dedent(
+        """\
+    #### Extract task
+    A simple Extract task to get data ready for the rest of the data pipeline.
+    In this case, getting data is simulated by reading from a hardcoded JSON string.
+    This data is then put into xcom, so that it can be processed by the next task.
+    """
+    )
+
+    transform_task = PythonOperator(
+        task_id="transform",
+        python_callable=transform,
+    )
+    transform_task.doc_md = textwrap.dedent(
+        """\
+    #### Transform task
+    A simple Transform task which takes in the collection of order data from xcom
+    and computes the total order value.
+    This computed value is then put into xcom, so that it can be processed by the next task.
+    """
+    )
+
+    load_task = PythonOperator(
+        task_id="load",
+        python_callable=load,
+    )
+    load_task.doc_md = textwrap.dedent(
+        """\
+    #### Load task
+    A simple Load task which takes in the result of the Transform task, by reading it
+    from xcom and instead of saving it to end user review, just prints it out.
+    """
+    )
+
+    extract_task >> transform_task >> load_task
+
+# [END main_flow]
+
+# [END tutorial]
+
+\end{verbatim}
+
+
+Un Dag può essere triggerato a intervalli regolari definiti a codice al momento della creazione tramite il parametro schedule che prende come parametro un valore di tipo datetime o una funzione che ritorna un datetime (come il decoratore @daily nell’esempio). Se poi non si vuole schedulare il dag si può semplicemente evitare di settare il parametro o settarlo a None e rimane possibile un triggering esterno tramite meccanismi come il triggerDagRunOperator, che di fatti sotto il mantello richiama api esposte dal web server per triggerare e creare un’istanza del Dag a piano di esecuzione.
+
+Aggiunta recente sul tema trigger è anche il concetto di Data-Aware scheduling, che delega l’aggiunta al piano di esecuzione di un Dag a update su risorse di tipo Dataset effettuate da operatori definiti anche in altri Dag:
+
+\begin{verbatim}
+from airflow.datasetsimport Dataset
+
+with DAG(...):
+    MyOperator(
+# this task updates example.csvoutlets=[Dataset("s3://dataset-bucket/example.csv")],
+        ...,
+    )
+with DAG(
+# this DAG should be run when example.csv is updated (by dag1)schedule=[Dataset("s3://dataset-bucket/example.csv")],
+    ...,
+):
+\end{verbatim}
+
+\subsubsection{Architettura}
+Airflow implementa best practice per gestione del monitoraggio anche dei log creati dai vari operator, che facilità il troubleshooting in caso di problematiche. è possibile in caso di errore, una volta individuato e risolto, riprendere l’esecuzione del dag dal punto in cui il task è fallito semplicemente triggerando il task a mano dalla GUI.
+Altre funzionalità molto utili sono le XCOM, variabili che lo scheduler serializza (tramite formato anche estendibile) e mette a disposizione di task diversi. Permettendo il passaggio di informazione tra task, che sono per scelta architetturale eseguiti indipendentemente dal componente executor di Airflow.
+
+
+Uno dei vantaggi di Airflow è la sua natura open source sotto il “protettorato” di Apache. Apache nello sviluppo di software è sinonimo di qualità nello sviluppo, libertà e meritocrazia nella governance del progetto. Di fatti è possibile imparare molto dallo studio del codice open source di Apache Airflow e capire in maniera approfondita le sue componenti principali.
+Le principali componenti principali di Apache Airflow a livello architetturale sono:
+\begin{itemize} 
+\item Web App
+\item Scheduler
+\item Executor
+\item Triggerer
+\item Database
+
+\end{itemize}
+\noindent
+\textbf{Web App}
+
+L’applicazione Web come abbiamo visto nel paragrafo precedente è utilissima per la gestione e visualizzazione dei dati e metadati che compongono dag e le sue esecuzioni. La scelta implementativa è ricaduta per questioni di praticità e integrazione in una code base python sull’utilizzo del framework Flask rilasciato su webServer Gunicorn, una configurazione molto diffusa per esporre servizi internet programmati in Python.
+
+La WebApp si è evoluta nel tempo sia in termini di tecnologie utilizzate che nella esperienza utente, in particolare negli ultimi anni è stato intrapreso un processo di rinnovamento che ha portato a slegare la produzione della UI dal server tramite software di templating renderizzato direttamente in Flask a un’architettura a “single page application” più modularizzata in cui il frontend è servito alla prima richiesta al server ed è scritto in ReactJS, che richiamano nelle varie funzionalità il backend scritto ancora in Flask.
+
+Il backend è la componente intermedia che funge da mediatore con scheduler e  DB e implementa logiche di business necessario al passaggio dei dati verso il Frontend, oltre a implementare gestione dell’utente, cookies e sicurezza usando api del framework.
+
+\noindent
+\textbf{Scheduler}
+
+Scheduler è forse la componente principale di Airflow. 
+
+In particolare è la componente che si occupa di processare i file python scritti dagli sviluppatori e costruire gli oggetti e classi Python che verranno memorizzati nel database relazionale configurato a backend. 
+
+Lo scheduler si attiva a intervalli regolari, configurabile nel file di configurazione airflow.cfg. In questo file è possibile settare tutti i parametri che regolano il comportamento del software ma anche del tipo di plugin o backend utilizzato per ciascuna componente (in esempio database diversi o esecutori diversi).
+
+Dopo essersi attivato lo scheduler ricorsivamente percorre il file system della folder configurata come root e cerca di leggere tutti i file che terminano con suffisso .py. Se all’interno trova una definizione di un DAG python allora procede all’evaluation del codice e alla costruzione delle strutture dati (classi, variabili ecc) che rappresentano i task e i dag in python. 
+
+Airflow usa poi SQLAlchemy, un ORM (object relational mapper), software comune alla maggior parte delle applicazioni web di backend, per mappare le classi python nelle strutture relazionali (tabelle ecc) del database implementando sia operazioni di DML. Le operazioni di DDL sono delegate a un modulo nel momento del rilascio che si occupa di effettuare le “migrazioni” del db, che sono un’ordinamento progressivo delle operazioni DDL versionate all’interno della repository. In modo da alterare e ripristinare le strutture DB tramite una comoda linea di comando e, nel caso di nuovi deploy, ripristinare l’intero DB.
+
+Informazioni a DB sono poi recuperate  a richiesta del Frontend dal backend in Flask.
+
+A questo punto lo scheduler quando è tempo di eseguire task crea istanze di dag e task inserendole in una coda software da passare all’esecutore configurato nel file di configurazione.
+
+\noindent
+\textbf{Executor}
+
+L’esecutore può essere vista sia come una proprietà dello scheduler sia come una componente software distinta. Difatti è possibile definire diversi scheduler che rispettano la stessa API e occupano prevalentemente di prendere in custodia dei task ed eseguirli.
+
+Esistono diversi esecutori “out of the box” e alcuni sono più efficienti e utili di altri in configurazioni di deploy diverse. Per debugging e sviluppo è molto utile l’esecutore seriale in cui non viene lanciato un processo diverso. 
+
+Ci sono poi degli esecutori che implementano un’architettura distribuita come il Celery executor o il Kubernetes executor, che per ciascun task del Dag lo esegue in dei pod sul cluster kubernetes.
+
+
+\noindent
+\textbf{Triggerer}
+
+Non è raro in contesti enterprise in produzione scrivere centinaia di Dags, ognuno dei quali contiene centinaia di task diversi. A seconda del metodo di deploy di Airflow ci sono dei limiti infrastrutturali al numero di task che possono coesistere concorrentemente in Airflow. Bloccando altri task che potrebbero essere pronti a partire. Questa situazione è accentuata dai cosidetti “Sensor”, un tipo di Operatore Airflow che aspetta in stato running una condizione, ad esempio che un file arrivi su Cloud Storage (GCSObjectExistanceSensor). Per mitigare questo tipo di situazione in cui di fatto un task è in stato di stallo o di attesa Airflow introduce la possibilità di differire task e runnare pezzi di python in maniera asincrona ijn un successivo momento a determinate condizioni chiamati trigger.
+
+Il triggerer è la componente software di Airflow che gestisce questa funzionalità.
+
+\noindent
+\textbf{Database}
+
+Come introdotto discutendo la componente di scheduler, la base di dati dove vengono salvati tutti i dati e metadati relativi all’applicazioni airflow è un database relazionale oltp configurabile. In produzione si raccomanda un RDBM come MySQL e Postgres, ma in locale è possibile configurare anche DB più piccoli a scopi di sviluppo e debugging. Particolarmente utile è SQLite, che implementa un DB relazionale in un unico file. Airflow sfrutta sqlalchemy per l’ORM, a cui delega l’interoperabilità dei diversi tipi di DB. 
+
+\section{Composer}
+Airflow, come abbiamo avuto modo di vedere nel precedente paragrafo presenta un’architettura software non monolitica fatta di diversi moduli python che si suddividono  concettualente.
+
+I maggiori Cloud providers, come descritto nel capitolo 3 presentano dei servizi SaaS che nascondono le complicazioni dell’infrastruttura hardware e di deploy sottostante e impacchettano il software in servizi gestiti facilmente configurabili dagli user e pronti all’uso dopo pochissimi step di configurazione. E il caso anche di Composer, il servizio gestito di Google per Apache Airflow, e anche di Amazon Managed Workflows For Apache Airflow (AMWAA) per AWS.
+
+Composer rilascia le varie componenti airflow su infrastruttura Google Cloud dedicata, in particolare usa tecnologie di containerizzazione e orchestrazione di container usando kubernetes e GKE (il servizio gestito che implementa un cluster Kubernetes), Cloud SQL come data store e database, GCS per configurazione di DAG, logging e plugin.
+
+
+\subsubsection{Architettura di Deploy}
+Esploriamo come i vari componenti architetturali di Aiflow vengono mappati all’interno dell’architettura Google.
+
+Il provider terraform di google fornisce una risorsa terraform che quando applicata allo stato del progetto effettua il deploy di tutte le risorse dell’ambiente composer:
+
+\begin{verbatim} 
+resource "google_composer_environment" "example_environment" {
+  provider = google-beta
+  name = "example-environment"
+
+  config {
+    software_config {
+      image_version = "composer-2.6.6-airflow-2.6.3"
+    }
+
+    node_config {
+      service_account = google_service_account.custom_service_account.email
+    }
+
+  }
+}
+
+
+\end{verbatim}
+
+Si rimanda alla documentazione della risorsa google\_composer\_environment di terraform le possibilità di configurazione dell’ambiente ma, ad alto livello, è possibile configurare plugin ed estensioni rilasciati sul cluster, oltre al sizing delle macchine per carrozzarle meglio (in ambiente produttivo, per esempio). Si possono poi specificare la versione dell’ambiente composer e di airflow, oltre alla configurazione network. è possibile infatti rilasciare il cluster in due configurazioni: pubblica e privata.
+
+La differenza sostanziale sta nell’apertura internet del cluster. 
+
+Nella figura 1 notiamo la differenza. Nel cluster pubblico l’accesso al database nel “progetto tenant” è inoltrato dal cloudsqlproxy installato in un container sul cluster composer, questo permette di accedere al database semplicemente connettendosi al proxy su quella macchina come se fosse il db.
+
+Il SQL proxy tiene cura di ascoltare su una porta della vm e fare da proxy a tutto il proxy verso e da CloudSQL nel progetto tenant, uniti insieme da VPC peering, uno dei meccanismi messi a disposizione da Google Cloud per rendere raggiungibili due VPC su diversi progetti.
+
+Nella modalità pubblica il web server è esposto su internet tramite Ingress GKE, questo di fatto crea un Google Cloud Load Balancer nel progetto che fa da proxy per il traffico web verso il microservizio (separando la componente di accesso e mapping network dall’applicativo, che magari nel suo ciclo di vita può essere interrotto e ripristinato su macchine virtuali diverse).
+
+Nel cluster privato invece la creazione del Google Cloud Load Balancer non avviene e il web server è di fatto irraggiungibile dalla rete internet pubblica. Si possono poi definire della master authorized newtork per accedere al cluster kubernetes e al web server, oppure una best practice è quella di creare una macchina virtuale (cosi detta “bastion host”) sulla stessa subnet del cluster GKE che fa da proxy al cluster.
+
+La componente principale dell’architettura di Google Cloud Composer come abbiamo introdotto è il cluster GKE in cui sono rilasciate le componenti applicative.
+
+GKE (Google Kubernetes Engine) è un servizio di Google che ti permette di rilasciare un cluster (insieme di macchine, in questo caso virtuali, che possono comunicare tra loro) con le componenti di Kubernetes preinstallate (api-server, controller-manager, cloud-controller-maanger, kube-let per i nodi, etcd come data store, kube-scheduler).
+
+Kubernetes ti permette poi di esprimere dichiaratamente la configurazione dei microservizi containerezzati che compongono l’applicativo e fa si che quando si discostino, per motivi di forza maggiore, dalla configurazione dichiarata, esse autonomamente si riallineino autonomamente.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/cap5-3.png}
+    \caption{Composer: private}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{img/cap5-4.png}
+    \caption{Composer: public}
+\end{figure}
+
+Il web Server Airflow in composer è un deployment kubernetes. 
+
+Un deployment è una risorsa kubernetes che ti permette di creare applicazioni con il numero desiderato di repliche, in modo che se una replica risultasse fuori uso, ci sarebbero altre repliche pronte a ricevere richieste nel mentre che si ripristinino il numero di servizi dichiarato.
+
+Anche gli scheduler sono diverse repliche su deployment kubernetes e queste inseriscono i task in una coda Redis definita nel cluster kubernetes come stateful set (un insieme di repliche che si differenziano per la capacità di persistere lo stato del container).
+
+Redis nel suo utilizzo più comune è un in-memory db che funge da cache chiave/valore per un accesso distribuito a bassa latenza da parte di diversi applicativi. In questo caso è usato come una coda pub/sub a bassa latenza da cui i worker airflow (esecutori) prendono in carico le attività da eseguire.
+
+Questi ultimi sono implementati da una cosidetta “Custom Resource” all’interno del cluster kubernetes: esse sono essenzialmente estensioni dell’API di kubernetes che tramite scrittura di software custom ti permettono di assumere un controllo maggiore in caso di particolari esigenze operative sul cluster.
+
+
+**Cloud Storage**
+
+Quando si crea un ambiente composer, Google crea un bucket GCS all’interno del progetto che contiene le seguenti folders: dags, plugins, data e logs. I microservizi che implementano Airflow all’interno del cluster GKE montano la folder come se fosse un file system attraverso il pacchetto open source Google Cloud Storage FUSE (in realtà niente è più distante dalla realtà, perchè come abbiamo visto nel capitolo 3 parlando di data lake, GCS può essere visto come un’enorme mappa chiave/valore, e non un file system). I file system userspace come GCS Fuse danno l’illusione che lo storage sottostante sia un file system permettendo ai vari container come lo scheduler di consultare i dag senza cambiare il codice di Airflow (che lavora su dag salvati in un file system)
+
+In particolare come possiamo vedere in figura, composer usa GCS per DAG, Plugins, e logs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.45]{img/cap5-5.png}
+    \caption{Composer: GCS}
+\end{figure}
+
+
+
+Questa scelta comporta una serie di vantaggi in termini anche di praticità di rilascio.
+
+Quando si vuole aggiungere o modificare task o dags in Airflow, visto che lo “stato di verità” è salvato in GCS possiamo implementare delle semplici CI/CD dove tutto quello che fanno è scrivere i file dove vengono definiti i dag all’interno della cartella dags in GCS. Sarà poi la componente di scheduler a intervalli configurabili a prendere e costruire il dag da visualizzare poi in UI.
+
+
+**CloudSQL**
+
+CloudSQL è il servizio Google gestito che facilità il deploy, configurazione e mantenimento di un database OLTP relazionale su infrastruttura Google Cloud. CloudSQL supporta al momento tre database: MySQL, PostgresSQL e SQLServer.
+
+Composer in particolare usa CloudSQL per PostgresSQLM come database e come accennato usa un progetto tenant dove rilasciarlo. Questo significa che all’interno del progetto Google dove è configurato l’ambiente l’istanza CloudSQL non è visibile, ma il progetto è completamente gestito da Google, è responsabilità di Google provvedere a un sizing adeguato e alla connettività funzionante con il progetto di appartenenza creato dall’amministratore del progetto su cui è rilasciato l’ambiente composer.
+
+Per contesti enterprise critici è opportuno configurare CloudSQL in modalità HA (High Availability). La configurazione HA propaga le operazioni di scrittura ad una seconda istanza di CloudSQL configurata in una zona diversa, che, nel caso di eventi rari come interruzioni di una zona Google Cloud provvede a implementare “fault tolerance” subentrando all’istanza principale. Una possibile configurazione può comprendere anche una gestione automatica dei backup scaricati direttamente in Google Cloud Storage, come fatto riferimento alla figura.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{img/cap5-6.png}
+    \caption{Composer: CloudSQL HA}
+\end{figure}
+\end{document}
+
+
