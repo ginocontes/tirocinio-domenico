@@ -189,6 +189,17 @@ module "import_bucket" {
 }
 
 
+module "output_bucket" {
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric.git?ref=v23.0.0/modules/gcs"
+  project_id = var.project_id
+  name       = "etl-tesi-${var.environment}-data-output"
+  versioning = true
+  location = "europe-west1"
+  storage_class = "REGIONAL"
+  uniform_bucket_level_access = false
+}
+
+
 
 ### BigQuery Datasets and tables with schema
 

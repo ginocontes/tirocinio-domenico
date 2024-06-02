@@ -13,10 +13,10 @@ default_args = {
 
 # Define the list of BigQuery tables to export
 bq_tables = [
-    'project.dataset.table1',
-    'project.dataset.table2',
-    'project.dataset.table3',
-    'project.dataset.table4',
+    "campaign",
+    "esitiemail",
+    "esitinotifiche",
+    "esitisms"
 ]
 
 # Define the DAG
@@ -30,21 +30,18 @@ with DAG(
 ) as dag:
 
     # Define GCS bucket and export format
-    gcs_bucket = 'your-gcs-bucket'
+    gcs_bucket = 'etl-tesi-dev-data-output'
     export_format = 'CSV'  # Options are: 'CSV', 'NEWLINE_DELIMITED_JSON', or 'AVRO'
 
     # Create a task for each table export
     for bq_table in bq_tables:
-        table_name = bq_table.split('.')[-1]
-        gcs_path = f'gs://{gcs_bucket}/{table_name}'
+        gcs_path = f'gs://{gcs_bucket}/{bq_table}'
 
         export_task = BigQueryToGCSOperator(
-            task_id=f'export_{table_name}',
-            source_project_dataset_table=bq_table,
-            destination_cloud_storage_uris=[f'{gcs_path}/*.csv'],
+            task_id=f'export_{bq_table}',
+            source_project_dataset_table=f"etl-tesi-domenico.marketing_final.{bq_table}",
+            destination_cloud_storage_uris=[f'{gcs_path}/{bq_table}_*.csv'],
             export_format=export_format,
             print_header=True,
-            field_delimiter=',',
-            bigquery_conn_id='google_cloud_default',
-            google_cloud_storage_conn_id='google_cloud_default'
+            field_delimiter=','
         )

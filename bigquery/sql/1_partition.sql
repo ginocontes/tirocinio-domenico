@@ -1,11 +1,10 @@
-CREATE OR REPLACE PROCEDURE `ETL20A.DataPartitioner_proc`()
-OPTIONS (strict_mode=false)
+
 BEGIN
  
-create or replace table ETL20A.SendLog_stage_part as 
+create or replace table marketing_source.cliente_source as 
 select * ,
 PARSE_DATE("%Y-%m-%d", SPLIT(logDate, ' ')[OFFSET(0)]) as logDateDate
-from ETL20A.SendLog_stage;
+from marketing_raw.cliente ;
  
 create or replace table ETL20A.SmsSendLog_stage_part as 
 select * ,
@@ -41,11 +40,13 @@ PARSE_DATE("%Y%m%d", SPLIT(ClickDate, ' ')[OFFSET(0)]) as clickDateDate
 from ETL20A.ClickReportPush_stage
 where clickDate like '%2%';
  
+
 create or replace table ETL20A.SmsMessageTracking_stage_part as 
 select * ,
 PARSE_DATE("%Y-%m-%d", SPLIT(CreateDateTime, ' ')[OFFSET(0)]) as CreateDateTimeDate
 from ETL20A.SmsMessageTracking_stage;
  
+
 create or replace table ETL20A.Clicks_stage_part as 
 select * ,
 PARSE_DATE("%m/%d/%Y", SPLIT(EventDate, ' ')[OFFSET(0)])

@@ -2,6 +2,9 @@ from airflow import DAG
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.utils.dates import days_ago
 from google.cloud import storage
+import os
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/ginocontestabile/dev/tirocinio-domenico/terraform/tf-sa.json"
 
 # Define default arguments
 default_args = {
@@ -22,7 +25,8 @@ def list_gcs_files(bucket_name, prefix=''):
 
 
 file_to_table_id = {
-    "clicks.csv": "clicks",
+    "click.csv": "clicks",
+    "clicknotifiche.csv": "clicknotifiche",
     "cliente.csv": "cliente",
     "email.csv": "email",
     "invii.csv": "invii",
@@ -30,7 +34,8 @@ file_to_table_id = {
     "microesiti.csv": "microesiti",
     "notifiche.csv": "notifiche",
     "sms.csv": "sms",
-    "unsub.csv": "unsub"
+    "unsub.csv": "unsub",
+    "journeyActivity.csv": "journeyActivity"
 }
 
 # Define the DAG
@@ -45,18 +50,19 @@ with DAG(
 
     # Define variables
     bucket_name = 'etl-tesi-dev-data-ingest'
-    prefix = '/'
-    dataset_id = 'marketing-raw'
+    prefix = ''
+    dataset_id = 'marketing_raw'
     # table_id = ''
 
     # Get the list of files to move
-    gcs_files = list_gcs_files(bucket_name, prefix, max_files=10)
+    gcs_files = list_gcs_files(bucket_name, prefix)
 
     # Create a task for each file
     for gcs_file in gcs_files:
-        table_id = file_to_table_id[gcs_file.split("/")[-1]]
+        filename = gcs_file.split("/")[-1]
+        table_id = file_to_table_id[filename]
         gcs_to_bq_task = GCSToBigQueryOperator(
-            task_id=f'gcs_to_bq_{gcs_file.split("/")[-1]}',
+            task_id=f'gcs_to_bq_{filename}',
             bucket=bucket_name,
             source_objects=[gcs_file],
             destination_project_dataset_table=f'{dataset_id}.{table_id}',
@@ -66,7 +72,5 @@ with DAG(
             #     # Add more fields as per your schema
             # ],
             autodetect=True,
-            write_disposition='WRITE_TRUNCATE',  # Recreate the table from scratch
-            google_cloud_storage_conn_id='google_cloud_default',
-            bigquery_conn_id='google_cloud_default'
+            write_disposition='WRITE_TRUNCATE'  # Recreate the table from scratc
         )

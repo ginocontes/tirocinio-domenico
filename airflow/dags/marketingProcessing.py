@@ -12,6 +12,11 @@ default_args = {
     'retries': 1,
 }
 
+
+def openquery(filename):
+    with open(f"/Users/ginocontestabile/dev/tirocinio-domenico/bigquery/sql2/{filename}.sql") as f:
+        return f.read()
+
 # Function to read SQL files from a directory
 def get_sql_files(directory):
     sql_files = []
@@ -36,7 +41,7 @@ with DAG(
         task_id="partition",
         configuration={
             "query": {
-                "query": "{% include 'sql/1_partition.sql' %}",
+                "query": openquery("1_partition"),
                 "useLegacySql": False,
             }
         },
@@ -46,17 +51,19 @@ with DAG(
         task_id="merge",
         configuration={
             "query": {
-                "query": "{% include 'sql/2_merge.sql' %}",
+                "query": openquery("2_merge"),
                 "useLegacySql": False,
             }
         },
         location="EU",
     )
+
+
     prep = BigQueryInsertJobOperator(
         task_id="prep",
         configuration={
             "query": {
-                "query": "{% include 'sql/3_prep.sql' %}",
+                "query": openquery("3_prep"),
                 "useLegacySql": False,
             }
         },
@@ -66,7 +73,7 @@ with DAG(
         task_id="campaign",
         configuration={
             "query": {
-                "query": "{% include 'sql/4_campaign.sql' %}",
+                "query": openquery("4_campaign"),
                 "useLegacySql": False,
             }
         },
@@ -76,7 +83,7 @@ with DAG(
         task_id="sms",
         configuration={
             "query": {
-                "query": "{% include 'sql/5_esitisms.sql' %}",
+                "query": openquery("5_esitisms"),
                 "useLegacySql": False,
             }
         },
@@ -87,7 +94,7 @@ with DAG(
         task_id="notifiche",
         configuration={
             "query": {
-                "query": "{% include 'sql/6_esitinotifiche.sql' %}",
+                "query": openquery("6_esitinotifiche"),
                 "useLegacySql": False,
             }
         },
@@ -98,7 +105,7 @@ with DAG(
         task_id="email",
         configuration={
             "query": {
-                "query": "{% include 'sql/7_esitiemail.sql' %}",
+                "query": openquery("7_esitiemail"),
                 "useLegacySql": False,
             }
         },
