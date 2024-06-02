@@ -1,4 +1,6 @@
 
 create or replace table marketing_final.esitinotifiche
 as
-select 2 as id;
+SELECT
+c.Numero_Telefono as PHONE_NUMB,
+c.cod_istituto as 
