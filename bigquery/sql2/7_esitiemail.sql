@@ -11,7 +11,7 @@ u.ymd_hms_ffffff_EventDate as DATE,
 m.MICROESITO as COD_MICROESITO,
 "EMAIL" as COD_CANALE
 FROM marketing_prep.emailunsub_prep u
-INNER JOIN marketing_prep.emailinvii_prep e
+INNER JOIN marketing_prep.emailinvii_prep e,
 on u.sendid = e.sendid 
 INNER JOIN marketing_raw.cliente on  u.SubscriberKey = c.SubscriberKey
 INNER JOIN marketing_prep.journey_prep jp on jp.id = e.journey_id
