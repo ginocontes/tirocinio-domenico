@@ -37,6 +37,50 @@ file_to_table_id = {
     "sms.csv": "sms"
 }
 
+table_to_schema={
+    "cliente.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+            ],
+    "emailclick.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "emailinvii.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "emailunsub.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "journey.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "journeyActivity.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "notificheclick.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "microesiti.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "notifiche.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ],
+    "sms.csv": [
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+    ]
+}
+
+# cod_istituto, COD_NDG_ANAGRAFICA_NSG, COD_FISCALE_PARTITA_IVA, SubscriberKey, EMAIL_ADDRESS
 # Define the DAG
 with DAG(
     'gcs_to_bigquery',
@@ -65,11 +109,11 @@ with DAG(
             bucket=bucket_name,
             source_objects=[gcs_file],
             destination_project_dataset_table=f'{dataset_id}.{table_id}',
-            # schema_fields=[
-            #     {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-            #     {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'},
-            #     # Add more fields as per your schema
-            # ],
+            schema_fields=[
+                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                # Add more fields as per your schema
+            ],
             autodetect=True,
             write_disposition='WRITE_TRUNCATE'  # Recreate the table from scratc
         )
