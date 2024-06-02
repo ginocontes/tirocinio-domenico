@@ -1,1 +1,3 @@
-cod_istituto, COD_NDG_ANAGRAFICA_NSG, 
+cod_istituto, COD_NDG_ANAGRAFICA_NSG, COD_FISCALE_PARTITA_IVA, SubscriberKey, EMAIL_ADDRESS
+1234, 00987, DMDFNC898, 1, me@gmail.com
+5678, 4817, DMCHR746, 2, tu@gmail.com
