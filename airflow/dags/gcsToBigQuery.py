@@ -25,17 +25,16 @@ def list_gcs_files(bucket_name, prefix=''):
 
 
 file_to_table_id = {
-    "click.csv": "clicks",
-    "clicknotifiche.csv": "clicknotifiche",
     "cliente.csv": "cliente",
-    "email.csv": "email",
-    "invii.csv": "invii",
+    "emailclick.csv": "emailclick",
+    "emailinvii.csv": "emailinvii",
+    "emailunsub.csv": "emailunsub",
     "journey.csv": "journey",
+    "journeyActivity.csv": "journeyActivity",
+    "notificheclick.csv": "notificheclick",
     "microesiti.csv": "microesiti",
     "notifiche.csv": "notifiche",
-    "sms.csv": "sms",
-    "unsub.csv": "unsub",
-    "journeyActivity.csv": "journeyActivity"
+    "sms.csv": "sms"
 }
 
 # Define the DAG
