@@ -39,7 +39,7 @@ file_to_table_id = {
 
 table_to_schema={
     "cliente.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'field1', 'type': 'STRING', 'mode':  'NULLABLE'},
                 {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
             ],
     "emailclick.csv": [
@@ -109,11 +109,7 @@ with DAG(
             bucket=bucket_name,
             source_objects=[gcs_file],
             destination_project_dataset_table=f'{dataset_id}.{table_id}',
-            schema_fields=[
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'},
-                # Add more fields as per your schema
-            ],
+            schema_fields=table_to_schema[filename],
             autodetect=True,
             write_disposition='WRITE_TRUNCATE'  # Recreate the table from scratc
         )
