@@ -4,7 +4,6 @@ BEGIN
 CREATE TABLE IF NOT EXISTS ETL20A.SendLog_all_part
 
 (
-
   JobID STRING,
   ListID STRING,
   BatchID STRING,

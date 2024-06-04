@@ -37,46 +37,53 @@ file_to_table_id = {
     "sms.csv": "sms"
 }
 
-table_to_schema={
+table_to_schema= {
     "cliente.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode':  'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
-            ],
+                {'name': 'cod_istituto', 'type': 'INTEGER', 'mode':  'NULLABLE'},
+                {'name': 'COD_NDG_ANAGRAFICA_NSG', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'COD_FISCALE_PARTITA_IVA', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'EMAIL_ADDRESS', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'Numero_Telefono', 'type': 'STRING', 'mode': 'NULLABLE'}
+    ],
+
     "emailclick.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'sendid', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'EventDate', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
     ],
     "emailinvii.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'journey_id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'sendid', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'data_invio', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'EventDate', 'type': 'STRING', 'mode': 'NULLABLE'},
     ],
     "emailunsub.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'sendid', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'EventDate', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
     ],
     "journey.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'name', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'}
     ],
     "journeyActivity.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'JourneyID', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'Activity_Name', 'type': 'STRING', 'mode': 'NULLABLE'}
     ],
     "notificheclick.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'ClickDate', 'type': 'STRING', 'mode': 'NULLABLE'},
     ],
     "microesiti.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'ESITOMC', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'MICROESITO', 'type': 'STRING', 'mode': 'NULLABLE'}
     ],
     "notifiche.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'DateTimeSend', 'type': 'STRING', 'mode': 'NULLABLE'},
     ],
     "sms.csv": [
-                {'name': 'field1', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'field2', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'logDate', 'type': 'STRING', 'mode': 'NULLABLE'},
     ]
 }
 
@@ -103,6 +110,8 @@ with DAG(
     # Create a task for each file
     for gcs_file in gcs_files:
         filename = gcs_file.split("/")[-1]
+        if filename not in file_to_table_id.keys():
+            continue
         table_id = file_to_table_id[filename]
         gcs_to_bq_task = GCSToBigQueryOperator(
             task_id=f'gcs_to_bq_{filename}',
@@ -110,6 +119,7 @@ with DAG(
             source_objects=[gcs_file],
             destination_project_dataset_table=f'{dataset_id}.{table_id}',
             schema_fields=table_to_schema[filename],
-            autodetect=True,
+            autodetect=False,
+            skip_leading_rows=1,
             write_disposition='WRITE_TRUNCATE'  # Recreate the table from scratc
         )

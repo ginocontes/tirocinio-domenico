@@ -91,7 +91,4 @@ Nel capitolo 4 abbiamo analizzato a grandi linee l'architettura software fisica 
 Sapere l'architettura distribuita e il livello di complessità in un prodotto come BigQuery ti permette di apprezzarne l'utilizzo da programmatore e analista, poichè le query vengono espresse in SQL, un linguaggio dichiarativo che si concentra sulla definizione e processing del livello logico del database, tralasciando i dettagli implementativi
 
 
-
 # Conclusioni
-
-
