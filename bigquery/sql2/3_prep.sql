@@ -6,7 +6,7 @@ ja.id as activity_id,
 ja.Activity_Name
 FROM marketing_raw.journey j
 INNER JOIN marketing_raw.journeyActivity ja on j.id = ja.JourneyID
-where j.JourneyStatus='Running' or j.JourneyStatus='Finishing' or j.JourneyStatus='Stopped' or j.JourneyStatus='Paused'
+where j.JourneyStatus='Running'
 ;
 
 CREATE OR REPLACE TABLE marketing_prep.notifiche
@@ -88,7 +88,6 @@ LEFT OUTER JOIN marketing_source.notificheclick nc on cast(p.deviceID AS STRING)
 where upper(p.status) = upper("success")
 and nc.deviceID is null 
 ; 
-
 
 
 

@@ -53,11 +53,3 @@ FROM marketing_source.emailinvii e
 INNER JOIN marketing_raw.cliente c on  e.SubscriberKey = c.SubscriberKey
 INNER JOIN marketing_raw.journey jp on jp.id = e.journey_id
 INNER JOIN marketing_raw.microesiti m  on m.ESITOMC = "sent"
-
-
-
-
-
-
-
-
