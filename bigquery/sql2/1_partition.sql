@@ -20,6 +20,12 @@
     as EventDateDate
     from marketing_raw.emailinvii;
 
+
+    create or replace table marketing_source.emailunsub_source as 
+    select * ,
+    PARSE_DATE("%m/%d/%Y", SPLIT(EventDate, ' ')[OFFSET(0)])
+    as EventDateDate
+    from marketing_raw.emailunsub;
     
     create or replace table marketing_source.notificheclick_source as 
     select * ,

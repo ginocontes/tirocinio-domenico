@@ -2,3 +2,8 @@ ESITOMC, MICROESITO
 unsubscribed, EMAIL_UNSUB
 click, EMAIL_CLICK
 open, EMAIL_OPEN
+sent, EMAIL_SENT
+SMS_Undelivered, SMS_DEL
+SMS_Delivered, SMS_UND
+notification_succ, NOTIF_SUCC
+notification_click, NOTIF_CLICK

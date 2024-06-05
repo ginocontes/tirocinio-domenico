@@ -1,3 +1,3 @@
-name, id
-PassaInBanca, 1
-TelefonoSconto, 2
+name, id, JourneyStatus
+PassaInBanca, 1, "Running"
+TelefonoSconto, 2, "Stopped"

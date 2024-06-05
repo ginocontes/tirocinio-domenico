@@ -57,6 +57,7 @@ table_to_schema= {
                 {'name': 'sendid', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'data_invio', 'type': 'STRING', 'mode': 'NULLABLE'},
                 {'name': 'EventDate', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
     ],
     "emailunsub.csv": [
                 {'name': 'sendid', 'type': 'INTEGER', 'mode': 'NULLABLE'},
@@ -65,7 +66,9 @@ table_to_schema= {
     ],
     "journey.csv": [
                 {'name': 'name', 'type': 'STRING', 'mode': 'NULLABLE'},
-                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'}
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'JourneyStatus', 'type': 'STRING', 'mode': 'NULLABLE'},
+
     ],
     "journeyActivity.csv": [
                 {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
@@ -73,17 +76,29 @@ table_to_schema= {
                 {'name': 'Activity_Name', 'type': 'STRING', 'mode': 'NULLABLE'}
     ],
     "notificheclick.csv": [
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'ClickDate', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'deviceId', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'notificaId', 'type': 'STRING', 'mode': 'NULLABLE'},
+
     ],
     "microesiti.csv": [
                 {'name': 'ESITOMC', 'type': 'STRING', 'mode': 'NULLABLE'},
                 {'name': 'MICROESITO', 'type': 'STRING', 'mode': 'NULLABLE'}
     ],
     "notifiche.csv": [
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'DateTimeSend', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'deviceId', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'testo', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'status', 'type': 'STRING', 'mode': 'NULLABLE'},
     ],
     "sms.csv": [
+                {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'logDate', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'delivered', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'undelivered', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+
     ]
 }
 
