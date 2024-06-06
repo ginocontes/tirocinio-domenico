@@ -1,478 +1,69 @@
+DROP TABLE `etl-tesi-domenico.marketing_source.emailinvii_all`; 
 
-BEGIN
-
-CREATE TABLE IF NOT EXISTS ETL20A.SendLog_all_part
-
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.emailinvii_all`
 (
-  JobID STRING,
-  ListID STRING,
-  BatchID STRING,
-  SubID STRING,
-  TriggeredSendID STRING,
-  ErrorCode_ STRING,
-  LogDate STRING,
-  SubscriberKey STRING,
-  Category STRING,
-  Pda STRING,
-  callingChannel STRING,
-  logDateDate DATE
-
-) PARTITION BY logDateDate;
- 
-CREATE TABLE IF NOT EXISTS ETL20A.SmsSendLog_all_part
-
-(
-
-  SmsJobID STRING,
-  SmsTriggeredSendID STRING,
-  SmsBatchID STRING,
-  SubID STRING,
-  LogDate STRING,
-  Category STRING,
-  SubscriberKey STRING,
-  PDA STRING,
-  callingChannel STRING,
-  numeroTelefono STRING,
-  LogDateDate DATE
-
-) PARTITION BY LogDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.Unsubs_all_part
-
-(
-
-  ClientID STRING,
-  SendID STRING,
-  SubscriberKey STRING,
-  EmailAddress STRING,
-  SubscriberID STRING,
-  ListID STRING,
+  journey_id INT64,
+  sendid INT64,
+  data_invio STRING,
   EventDate STRING,
-  EventType STRING,
-  BatchID STRING,
-  TriggeredSendExternalKey STRING,
-  UnsubReason STRING,
+  SubscriberKey INT64,
   EventDateDate DATE
-
 ) PARTITION BY EventDateDate;
- 
-CREATE TABLE IF NOT EXISTS ETL20A.Sent_all_part
 
+DROP TABLE `etl-tesi-domenico.marketing_source.emailunsub_all`; 
+
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.emailunsub_all`
 (
-
-  ClientID STRING,
-  SendID STRING,
-  SubscriberKey STRING,
-  EmailAddress STRING,
-  SubscriberID STRING,
-  ListID STRING,
+  sendid INT64,
   EventDate STRING,
-  EventType STRING,
-  BatchID STRING,
-  TriggeredSendExternalKey STRING,
-  CampaignID STRING,
+  SubscriberKey INT64,
   EventDateDate DATE
+) PARTITION BY EventDateDate;
 
-)
+DROP TABLE `etl-tesi-domenico.marketing_source.emailclick_all`; 
 
-PARTITION BY EventDateDate
-
-;
- 
-CREATE TABLE IF NOT EXISTS ETL20A.Complaints_all_part
-
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.emailclick_all`
 (
-
-  ClientID STRING,
-  SendID STRING,
-  SubscriberKey STRING,
-  EmailAddress STRING,
-  SubscriberID STRING,
-  ListID STRING,
+  sendid INT64,
   EventDate STRING,
-  EventType STRING,
-  BatchID STRING,
-  TriggeredSendExternalKey STRING,
-  Domain STRING,
+  SubscriberKey INT64,
   EventDateDate DATE
+) PARTITION BY EventDateDate;
 
-)
+DROP TABLE `etl-tesi-domenico.marketing_source.notifiche_all`; 
 
-PARTITION BY EventDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.Bounce_all_part
-
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.notifiche_all`
 (
-
-  AccountID STRING,
-  SubscriberKey STRING,
-  SubscriberID STRING,
-  ListID STRING,
-  BatchID STRING,
-  OYBAccountID STRING,
-  TriggererSendDefinitionObjectID STRING,
-  TriggeredSendCustomerKey STRING,
-  Domain STRING,
-  IsUnique STRING,
-  EventDate STRING,
-  JobID STRING,
-  BounceCategoryID STRING,
-  BounceCategory STRING,
-  BounceSubcategoryID STRING,
-  BounceSubcategory STRING,
-  BounceTypeID STRING,
-  BounceType STRING,
-  SMTPBounceReason STRING,
-  SMTPMessage STRING,
-  SMTPCode STRING,
-  EventDateDate DATE
-
-)
-
-PARTITION BY EventDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.ClickReportPush_all_part
-
-(
-
-  URL STRING,
-  Cod_Esito STRING,
-  CreatedDate STRING,
-  ContactKey STRING,
-  SendDate STRING,
-  MessageName STRING,
-  ClickDate STRING,
-  DeviceId STRING,
-  ClickDateDate DATE
-
-)
-
-PARTITION BY ClickDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.SmsMessageTracking_all_part
-
-(
-
-  MobileMessageTrackingId STRING,
-  EID STRING,
-  MID STRING,
-  Mobile STRING,
-  MessageID STRING,
-  KeywordID STRING,
-  CodeID STRING,
-  ConversationID STRING,
-  CampaignID STRING,
-  Sent STRING,
-  Delivered STRING,
-  Undelivered STRING,
-  Unsub STRING,
-  OptIn STRING,
-  OptOut STRING,
-  Outbound STRING,
-  Inbound STRING,
-  CreateDateTime STRING,
-  ModifiedDateTime STRING,
-  ActionDateTime STRING,
-  MessageText STRING,
-  IsTest STRING,
-  MobileMessageRecurrenceID STRING,
-  ResponseToMobileMessageTrackingID STRING,
-  IsValid STRING,
-  InvalidationCode STRING,
-  SendID STRING,
-  SendSplitID STRING,
-  SendSegmentID STRING,
-  SendJobID STRING,
-  SendGroupID STRING,
-  SendPersonID STRING,
-  SubscriberId STRING,
-  JBActivityID STRING,
-  JBDefinitionID STRING,
-  SubscriberKey STRING,
-  SMSStandardStatusCodeId STRING,
-  Description STRING,
-  Name STRING,
-  ShortCode STRING,
-  SharedKeyword STRING,
-  Ordinal STRING,
-  FromName STRING,
-  SMSJobId STRING,
-  SmsBatchID STRING,
-  CreateDateTimeDate DATE
-
-)
-
-PARTITION BY CreateDateTimeDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.Clicks_all_part
-
-(
-
-  ClientID STRING,
-  SendID STRING,
-  SubscriberKey STRING,
-  EmailAddress STRING,
-  SubscriberID STRING,
-  ListID STRING,
-  EventDate STRING,
-  EventType STRING,
-  SendURLID STRING,
-  URLID STRING,
-  URL STRING,
-  Alias STRING,
-  BatchID STRING,
-  TriggeredSendExternalKey STRING,
-  IsUnique STRING,
-  IsUniqueForURL STRING,
-  EventDateDate DATE
-
-)
-
-partition by EventDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.Opens_all_part
-
-(
-
-  ClientID STRING,
-  SendID STRING,
-  SubscriberKey STRING,
-  EmailAddress STRING,
-  SubscriberID STRING,
-  ListID STRING,
-  EventDate STRING,
-  EventType STRING,
-  BatchID STRING,
-  TriggeredSendExternalKey STRING,
-  IsUnique STRING,
-  EventDateDate DATE,
-
-)
-
-PARTITION BY EventDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.MobilePushDetailExtractReport_all_part
-
-(
-
-  AppName STRING,
-  MessageName STRING,
-  MessageID STRING,
-  Campaigns STRING,
-  DeviceId STRING,
+  id INT64,
   DateTimeSend STRING,
-  MessageContent STRING,
-  MessageOpened STRING,
-  OpenDate STRING,
-  TimeInApp STRING,
-  Platform STRING,
-  PlatformVersion STRING,
-  Status STRING,
-  ServiceResponse STRING,
-  GeofenceName STRING,
-  Template STRING,
-  Format STRING,
-  PageName STRING,
-  PushJobId STRING,
-  SystemToken STRING,
-  InboxMessageDownloaded STRING,
-  InboxMessageOpened STRING,
-  IosMediaUrl STRING,
-  AndroidMediaUrl STRING,
-  MediaAlt STRING,
-  ContactKey STRING,
-  RequestId STRING,
+  deviceId STRING,
+  testo STRING,
+  status STRING,
+  SubscriberKey INT64,
+  journey_id INT64,
   DateTimeSendDate DATE
+) PARTITION BY DateTimeSendDate;
 
-)
+DROP TABLE `etl-tesi-domenico.marketing_source.notificheclick_all`; 
 
-PARTITION BY DateTimeSendDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.PushSendLog_all_part
-
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.notificheclick_all`
 (
+  id INT64,
+  ClickDate STRING,
+  deviceId STRING,
+  notificaId STRING,
+  clickDateDate DATE
+) PARTITION BY clickDateDate;
 
-  SubscriberKey STRING,
-  PushJobID STRING,
-  PushTriggeredSendRequestID STRING,
-  PushBatchID STRING,
-  SubID STRING,
-  DeviceId STRING,
-  AppId STRING,
-  LogDate STRING,
-  Category STRING,
-  PDA STRING,
-  callingChannel STRING,
-  LogDateDate DATE
+DROP TABLE `etl-tesi-domenico.marketing_source.sms_all`; 
 
-)
-
-PARTITION BY logDateDate
-
-;
-
-CREATE TABLE IF NOT EXISTS ETL20A.CI_CAMPAIGN_RETROFIT_FULL
+CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.sms_all`
 (
-  CAMPAIGN_CD STRING,
-  CAMPAIGN_DESC STRING,
-  CAMPAIGN_NM STRING,
-  CAMPAIGN_SK STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
--- CREATE OR REPLACE TABLE  `ETL20A.CI_CELL_PACKAGE_RETROFIT_FULL`
-CREATE TABLE IF NOT EXISTS  `ETL20A.CI_CELL_PACKAGE_RETROFIT_FULL`
-(
-  CAMPAIGN_CD STRING,
-  CAMPAIGN_NM STRING,
-  CELL_PACKAGE_SK STRING,
-  CHANNEL_CD STRING,
-  CHANNEL_NM STRING,
-  COMMUNICATION_CD STRING,
-  COMMUNICATION_NM STRING,
-  COMMUNICATION_SK STRING,
-  PROCESSED_DTTM STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_PACKAGE_X_TREATMENT_RETROFIT_FULL`
-(
-  CONTRIBUTING_CELL_PACKAGE_SK STRING,
-  TREATMENT_SK INT64,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_COMMUNICATION_RETROFIT_FULL`
-(
-  CAMPAIGN_SK STRING,
-  COMMUNICATION_CD STRING,
-  COMMUNICATION_DESC STRING,
-  COMMUNICATION_NM STRING,
-  COMMUNICATION_SK STRING,
-  PROCESSED_DTTM STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_CONTACT_HISTORY_DTT_FULL`
-(
-  CELL_PACKAGE_SK STRING,
-  COD_CLUSTER STRING,
-  COD_CREATIVITA_CRM STRING,
-  COD_ISTITUTO STRING,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  COD_TIPO_CLIENTE STRING,
-  CONTACT_DTTM STRING,
-  SURR_NDG_REFERENTE STRING,
-  TREATMENT_CD STRING,
-  RT STRING,
-  OFFER_ID STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_CONTACT_HISTORY_FULL`
-(
-  CELL_PACKAGE_SK STRING,
-  COD_ISTITUTO STRING,
-  CONTACT_DT STRING,
-  CONTACT_DTTM STRING,
-  SURR_NDG_REFERENTE STRING,
-  RT STRING,
-  OFFER_ID STRING,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-; 
-
-
-CREATE TABLE IF NOT EXISTS  `ETL20A.CI_PRESENTED_TREATMENT_HISTORY_FULL`
-(
-  CELL_PACKAGE_SK STRING,
-  SURR_NDG_REFERENTE STRING,
-  TREATMENT_SK INT64,
-  PRESENTED_TREATMENT_HIST_DTTM STRING,
-  COD_ISTITUTO STRING,
-  COD_CLUSTER STRING,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  COD_TIPO_CLIENTE STRING,
-  TREATMENT_CD STRING,
-  CHANNEL_CD STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-; 
-
-CREATE TABLE IF NOT EXISTS `ETL20A.T_RTD_INFO_AGG_TRT_RETROFIT_FULL`
-(
-  SURR_NDG_REFERENTE STRING,
-  COD_ISTITUTO STRING,
-  CELL_PACKAGE_SK STRING,
-  TREATMENT_CD STRING,
-  DT_PRESENTAZIONE STRING,
-  COD_CLUSTER STRING,
-  COD_TIPO_CLIENTE STRING,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  CHANNEL_DC STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-;
-
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_RESPONSE_HISTORY_INFO_AGG_RE_FULL`
-(
-  CELL_PACKAGE_SK STRING,
-  TREATMENT_SK INT64,
-  COD_ISTITUTO STRING,
-  SURR_NDG_REFERENTE STRING,
-  RESPONSE_DTTM STRING,
-  TREATMENT_CD STRING,
-  COD_CLUSTER STRING,
-  COD_TIPO_CLIENTE STRING,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  COD_CREATIVITA_CRM STRING,
-  RT INT64,
-  EXTERNAL_RESPONSE_INFO_ID1 STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-
-)
-; 
-
-CREATE TABLE IF NOT EXISTS `ETL20A.CI_RESPONSE_HISTORY_RETROFIT_FULL`
-(
-  CELL_PACKAGE_SK STRING,
-  COD_ISTITUTO STRING,
-  EXTERNAL_RESPONSE_INFO_ID1 STRING,
-  PROCESSED_DTTM STRING,
-  RESPONSE_CHANNEL_CD STRING,
-  RESPONSE_DT STRING,
-  RESPONSE_DTTM STRING,
-  RT STRING,
-  SURR_NDG_REFERENTE STRING,
-  TREATMENT_SK INT64,
-  COD_NDG_ANAGRAFICA_PF STRING,
-  INSERT_TIMESTAMP TIMESTAMP
-)
-; 
-
-END
+  id INT64,
+  logDate STRING,
+  delivered INT64,
+  undelivered INT64,
+  SubscriberKey INT64,
+  journey_id INT64,
+  logDateDate DATE
+) PARTITION BY logDateDate;

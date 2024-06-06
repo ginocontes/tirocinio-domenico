@@ -14,7 +14,7 @@ default_args = {
 
 
 def openquery(filename):
-    with open(f"/Users/ginocontestabile/dev/tirocinio-domenico/bigquery/sql2/{filename}.sql") as f:
+    with open(f"/Users/ginocontestabile/dev/tirocinio-domenico/bigquery/sql/{filename}.sql") as f:
         return f.read()
 
 # Function to read SQL files from a directory

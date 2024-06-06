@@ -92,12 +92,17 @@ table_to_schema= {
                 {'name': 'deviceId', 'type': 'STRING', 'mode': 'NULLABLE'},
                 {'name': 'testo', 'type': 'STRING', 'mode': 'NULLABLE'},
                 {'name': 'status', 'type': 'STRING', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'journey_id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+
     ],
     "sms.csv": [
                 {'name': 'id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'logDate', 'type': 'STRING', 'mode': 'NULLABLE'},
                 {'name': 'delivered', 'type': 'INTEGER', 'mode': 'NULLABLE'},
                 {'name': 'undelivered', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'SubscriberKey', 'type': 'INTEGER', 'mode': 'NULLABLE'},
+                {'name': 'journey_id', 'type': 'INTEGER', 'mode': 'NULLABLE'},
 
     ]
 }
