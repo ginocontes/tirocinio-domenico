@@ -67,3 +67,14 @@ CREATE OR REPLACE TABLE `etl-tesi-domenico.marketing_source.sms_all`
   journey_id INT64,
   logDateDate DATE
 ) PARTITION BY logDateDate;
+
+DROP TABLE `etl-tesi-domenico.marketing_source.campaign_full`; 
+
+CREATE TABLE `etl-tesi-domenico.marketing_prep.campaign_full`
+(
+  campaignId INT64,
+  campaignName STRING,
+  ActivityID INT64,
+  ActivityName STRING,
+  INSERT_TIMESTAMP TIMESTAMP
+);
